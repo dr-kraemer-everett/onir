@@ -1,0 +1,16 @@
+/*
+
+2026-02-17:
+first commit of onir, a simple I2C library for dials, switches, and (eventually) servos. I hope it will help my students practice using some components that are greatly abundant in ko lab.
+
+working sketches; char_channel, multi_char_client, char_device, local_char_device, simple_char_client, local_dial_device, test_char_client
+
+I'm uploading onir to github because there's enough of it that it seems worth stashing here, and because I'm going to ask some coding AIs to handle the TODO material in dial_encoder.h to see how they manage the task.
+
+I haven't successfully used AI for programming so far. I tried giving one of my old graph-traversal questions to ChatGPT shortly after its public release and was impressed at how readily it spat out what looked like working Python and C++ solutions. But it seemed to get lost when I tried it with anything bigger, and to have very different instincts than me when it came to how to break things up. And I didn't have any programs to write that I couldn't quickly bang out by hand anyway, so I deferred.
+
+But I keep hearing that recent improvements have been impressive. Here I have a chunk of code that should be enough to generalize from. And I have other things to get done this week. So I thought I'd give it another shot.
+
+license: The name 'onir' may sound dreamy, but it's also short for "oh, nothing I'd recommend." I hope this software will be ready to use outside my lab someday. But for now I wouldn't advise putting this near your hardware.
+
+*/
