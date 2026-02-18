@@ -8,7 +8,7 @@ class Dial {
 public:
   Dial();
 
-  void attach_device(DialDevice* d);
+  void attach(DialDevice* d);
   
   void set_channel(int ch) {
     channel = ch;

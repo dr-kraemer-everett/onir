@@ -10,7 +10,7 @@ void setup() {
   Serial.begin(9600);
   int* pinout = set_uno_pinout(init_interface);
   device.set_pinout(pinout);
-  dial.attach_device(&device);
+  dial.attach(&device);
   Serial.println("starting dial test");
   dial_value = dial.value();
 }

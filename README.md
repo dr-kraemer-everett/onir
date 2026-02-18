@@ -9,6 +9,14 @@ The name 'onir' may sound dreamy, but it's also short for "oh, nothing I'd recom
 
 2026-02-18:
 
+fifth commit: Add screen and screen_device, meant as a replacement for char_display. I find it amusing that my AI coding assistant, faced with the task of adapting this code, more or less told me, "Looks like you got this one, I'll just watch from here."
+
+in all fairness, there was plenty of cruft I could remove and still have the minimal local screen reading "onir" and the I2C client/device pair blinking the colon. I probably would have made the bot port most of it over, but if I had to chip it out with my parentheses by hand I saw the upside of letting it go.
+
+Next step is to swap the key demos over to use screen (and drop the non-key demos), and delete the char_thing code.
+
+(updated the chat thread on the server side. no new link.)
+
 third/fourth commit: (dropped the initial one that was just the creation of the repo without the files.) I used ChatGPT (the 'Plus' version, from my personal account) to split up the dial code into a client and device side, and got the demos working again.
 
 I'd describe the result as mixed. I could've written the code in as much time as it took to produce with the model. Then I would've spent those hours writing C code instead of relitigating with a robot all of the semantic and procedural decisions I previously made with readability as my main (or only!) constraint. As the model put it, "The assistant frequently tried to generalize or conventionalize the structure. The final version is better because those changes were rejected."

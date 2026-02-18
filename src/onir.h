@@ -47,6 +47,11 @@ struct DisplayState {
   int point;     // using values outside [0,3] is pointless.
 };
 
+struct ScreenState {
+  char chars[4];  // characters on screen; ' ' is blank.
+  int point;      // using values outside [0,3] is pointless.
+};
+
 struct ServoState {
   int servo_l = 1500;
   int servo_r = 1500;

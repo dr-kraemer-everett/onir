@@ -65,7 +65,7 @@ void setup() {
   int* pinout = set_uno_pinout(init_interface);
   device.set_pinout(pinout);
   dial_device.set_pinout(pinout);
-  dial.attach_device(&dial_device);
+  dial.attach(&dial_device);
   int c = ChannelSelector(&dial, &device).get_channel();
   channel = c;
   Serial.print("selected: ");

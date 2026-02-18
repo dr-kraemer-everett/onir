@@ -7,7 +7,7 @@
 Dial::Dial() {
   zero();
 }
-void Dial::attach_device(DialDevice* d) {
+void Dial::attach(DialDevice* d) {
   device->init();
   device = d;
 }
