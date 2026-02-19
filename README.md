@@ -7,6 +7,32 @@ The name 'onir' may sound dreamy, but it's also short for "oh, nothing I'd recom
 
 # updates
 
+2026-02-19:
+
+seventh commit: Duplicate ChannelSelector into Selector, with a script that uses it to select a channel for Screen.
+
+Not much to say here. Did this by hand, gonna see if the machine can do anything useful with the next part.
+
+The next obvious step would be to update the multi-display demo to use the Screen class, but I don't want to do that. There's a bunch of logic dealing with more than one screen in there that belongs at the library level. Then I'll make a new multiscreen demo and delete most of the existing examples.
+
+Have to think a minute on the design. I'll probably let the robot take a crack at it -- it loves that kind of high level hand-wavy stuff. We'll see how the ideas are.
+
+(no new link, updated the thread.)
+
+sixth commit: Miscellaneous readability / cleanup / calligraphy (yes).
+
+This was also around the time I tried again to stuff the Wire handler that lives in the device script into the class as a static method, and once again figured out there's no good way to do that without covering the entire class in static declarations and initializations that are meaningless noise to my students.
+
+Instead, I have followed the example of Aesop's fox, and decided that the presence of this alarming code ("readBytes((byte*)&device.state"? looks bold.) at the top level of the script is not a bug, but a feature.
+
+After all, the prospect of being in the position of an I2C device would be alarming! Imagine being given a phone and told you have to pick up whenever it rings, then and believe anything you are told. (*That* is how the device do...)
+
+The alert reader will note I said no *good* way of smuggling information into the handler. Like last year when I wrote the initial version of this code, I did, however, think of a *bad* way. Last year I had to talk myself off of this particular ledge.
+
+But this year I could get robotic assistance with my problem, and say to a bot, "hey, did'ja ever notice that the parameter with the message size is the same as the Uno's address table? because I sure as heck noticed that." Then I got to hear a big pile of algebra play back a vague, half-coherent echoing chorus chanting dire tones laying out the reasons this would not be the right path to go down. (https://chatgpt.com/share/699755fb-e7fc-8003-9667-4ed68952f0f1)
+
+I found this to be a reassuring experience overall, since if you read though most of my chats with the bot you'll see it validating my various choices to a degree I find kind of alarming. But it turns out this mule can balk when the path ahead is nothing but rocks to the horizon.
+
 2026-02-18:
 
 fifth commit: Add screen and screen_device, meant as a replacement for char_display. I find it amusing that my AI coding assistant, faced with the task of adapting this code, more or less told me, "Looks like you got this one, I'll just watch from here."

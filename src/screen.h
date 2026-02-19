@@ -22,8 +22,6 @@ public:
     }
   }
 
-  Screen(int* pinout[(int)PinFunction::END]);
-
   void init(int channel);
 
   void attach(ScreenDevice* d) {
