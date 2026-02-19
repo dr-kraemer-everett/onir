@@ -5,6 +5,10 @@
 
 #include "screen_device.h"
 
+Screen::Screen(int* pinout[(int)PinFunction::END]) {
+  
+}
+
 void Screen::init(int c) {
   channel = c;
   Wire.begin();

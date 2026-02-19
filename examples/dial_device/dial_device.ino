@@ -14,7 +14,7 @@ long last_count = 0;
 bool last_button = false;
 
 void on_request() {
-  Wire.write((uint8_t*)&state, sizeof(DialState));
+  Wire.write((byte*)&state, sizeof(DialState));
 }
 
 void setup() {

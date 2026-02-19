@@ -11,67 +11,63 @@ ScreenDevice::ScreenDevice() {
     positions[i] = (PinFunction)(i + (int)PF::DD_1);
   }
   for (int i = 0; i < (int)PinFunction::END; i++) {
-    device_pinout[i] = 0;
+    device_pinout[i] = -1;
   }
+  set_segment_masks();
+  set_char_masks();
 }
 
 void ScreenDevice::set_pinout(int* pinout) {
-  set_segment_masks();
-  set_char_masks();
   for (int i = (int)PinFunction::DD_A; i <= (int)PinFunction::DD_4; i++) {
     device_pinout[i] = pinout[i];
     pinMode(pinout[i], OUTPUT);
   }
-  clear_pins();
+  clear();
 }
 
-void ScreenDevice::clear_pins() {
-  for (PinFunction output : segments) {
-    digitalWrite(device_pinout[(int)output], LOW);
+void ScreenDevice::clear() {
+  for (PinFunction segment : segments) {
+    pin_low(segment);
   }
-  digitalWrite(device_pinout[(int)PF::DD_P], LOW);
-  for (PinFunction output : positions) {
-    digitalWrite(device_pinout[(int)output], HIGH);
+  set_point_pin(LOW);
+  for (PinFunction position : positions) {
+    pin_high(position);
   }
-}
-
-void ScreenDevice::debug() {
-  for (int i = 0; i < 4; i++) {
-    Serial.print((char)state.chars[i]);
-  }
-  Serial.print(digitalRead(A3));
-  Serial.println();
-}
-
-void ScreenDevice::debug(char c) {
-  Serial.print(c);
-  Serial.print(": ");
-  debug();
-}
-
-void ScreenDevice::debug(int i) {
-  Serial.print(i);
-  Serial.print(": ");
-  Serial.println(device_pinout[i]);
 }
 
 int ScreenDevice::position_to_show() {
   return (millis() % ms_per_cycle) / ms_per_digit;
 }
 
+void ScreenDevice::pin_high(PinFunction fn) {
+  set_fn_pin(fn, HIGH);
+}
+
+void ScreenDevice::pin_low(PinFunction fn) {
+  set_fn_pin(fn, LOW);
+}
+
+void ScreenDevice::set_fn_pin(PinFunction fn, bool val) {
+  digitalWrite(device_pinout[(int)fn], val);
+}
+
+void ScreenDevice::set_point_pin(bool val) {
+  digitalWrite(device_pinout[(int)PF::DD_P], val);
+}
+
 void ScreenDevice::refresh() {
   int position = position_to_show();
   if (position != position_showing) {  // redraw screen
     position_showing = position;
-    clear_pins();
+    clear();
     for (PinFunction segment : segments) {
       if (segment_masks[(int)segment] & char_masks[(int)state.chars[position]]) {
-        digitalWrite(device_pinout[(int)segment], HIGH);
+        pin_high(segment);
       }
     }
     if (state.point == position) {
-      digitalWrite(device_pinout[(int)PF::DD_P], HIGH);
+      set_point_pin(HIGH);
     }
-    digitalWrite(device_pinout[(int)positions[position]], LOW);
+    pin_low(positions[position]);
   }
 }

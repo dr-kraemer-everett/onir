@@ -1,13 +1,11 @@
-//#include "char_device.h"
 #include "screen_device.h"
 #include "uno_pinout.h"
 
 #include "Wire.h"
 
-//CharDevice device;
 ScreenDevice screen;
 
-void update_display_state(int message_size) {
+void update_screen(int message_size) {
   Wire.readBytes((byte*)&screen.state, message_size);
 }
 
@@ -17,7 +15,7 @@ void setup() {
   screen.set_pinout(set_uno_pinout(init_interface));
 
   Wire.begin(SCREEN_DEVICE_CHANNEL);
-  Wire.onReceive(update_display_state);
+  Wire.onReceive(update_screen);
 }
 
 void loop() {

@@ -14,7 +14,6 @@ class ScreenDevice {
 public:
   ScreenDevice();
 
-  ScreenState state;  // publicly mutable
   void update(const ScreenState s) {
     state = s;
   }
@@ -25,11 +24,13 @@ public:
 
   void refresh();
 
+  ScreenState state;
+  
+  void clear();
+
 private:
 
   int device_pinout[(int)PinFunction::END];
-
-  void clear_pins();
 
   // Map positions to position/cathode pins.
   PinFunction positions[4];
@@ -64,6 +65,8 @@ private:
 
   int char_masks[N_CHAR_MASKS];
 
+  void set_char_mask(char ch, char segments[]);
+
   void set_char_masks() {
     for (int i = 0; i < N_CHAR_MASKS; i++) {
       char_masks[i] = 0;
@@ -80,21 +83,22 @@ private:
     char_masks[(int)'9'] = sm('A') + sm('B') + sm('C') + sm('D') + sm('F') + sm('G');
     char_masks[(int)'-'] = sm('G');
 
+    // calligraphic order
     char_masks[(int)'a'] = sm('A') + sm('B') + sm('C') + sm('E') + sm('F') + sm('G');
-    char_masks[(int)'b'] = sm('C') + sm('D') + sm('E') + sm('F') + sm('G');
+    char_masks[(int)'b'] = sm('F') + sm('E') + sm('D') + sm('C') + sm('G');
     char_masks[(int)'c'] = sm('G') + sm('E') + sm('D');
     char_masks[(int)'d'] = sm('B') + sm('C') + sm('D') + sm('E') + sm('G');
-    char_masks[(int)'e'] = sm('A') + sm('D') + sm('E') + sm('F') + sm('G');
-    char_masks[(int)'f'] = sm('A') + sm('E') + sm('F') + sm('G');
-    char_masks[(int)'g'] = sm('A') + sm('B') + sm('C') + sm('D') + sm('F') + sm('G');
-    char_masks[(int)'h'] = sm('C') + sm('E') + sm('F') + sm('G');
+    char_masks[(int)'e'] = sm('A') + sm('F') + sm('E') + sm('D') + sm('G');
+    char_masks[(int)'f'] = sm('A') + sm('F') + sm('E') + sm('G');
+    char_masks[(int)'g'] = sm('G') + sm('F') + sm('A') + sm('B') + sm('C') + sm('D');
+    char_masks[(int)'h'] = sm('F') + sm('E') + sm('G') + sm('C');
     char_masks[(int)'i'] = sm('E');
     char_masks[(int)'j'] = sm('B') + sm('C') + sm('D') + sm('E') ;
-    char_masks[(int)'k'] = sm('B') + sm('E') + sm('F') + sm('G');
-    char_masks[(int)'l'] = sm('D') + sm('E') + sm('F');
+    char_masks[(int)'k'] = sm('F') + sm('E') + sm('G') + sm('B');
+    char_masks[(int)'l'] = sm('F') + sm('E') + sm('D');
     char_masks[(int)'m'] = sm('E') + sm('A') + sm('C');
-    char_masks[(int)'n'] = sm('C') + sm('E') + sm('G');
-    char_masks[(int)'o'] = sm('C') + sm('D') + sm('E') + sm('G');
+    char_masks[(int)'n'] = sm('E') + sm('G') + sm('C');
+    char_masks[(int)'o'] = sm('G') + sm('E') + sm('D') + sm('C');
     char_masks[(int)'p'] = sm('G') + sm('B') + sm('A') + sm('F') + sm('E');
     char_masks[(int)'q'] = sm('G') + sm('F') + sm('A') + sm('B') + sm('C');
     char_masks[(int)'r'] = sm('E') + sm('G');
@@ -103,8 +107,8 @@ private:
     char_masks[(int)'u'] = sm('B') + sm('C') + sm('D') + sm('E') + sm('F');
     char_masks[(int)'v'] = sm('E') + sm('D') + sm('C');
     char_masks[(int)'w'] = sm('F') + sm('D') + sm('B');
-    char_masks[(int)'x'] = sm('B') + sm('C') + sm('G');
-    char_masks[(int)'y'] = sm('B') + sm('C') + sm('D') + sm('F') + sm('G');
+    char_masks[(int)'x'] = sm('G') + sm('B') + sm('C');
+    char_masks[(int)'y'] = sm('F') + sm('G') + sm('B') + sm('C') + sm('D');
     char_masks[(int)'z'] = sm('A') + sm('B') + sm('G') + sm('E');
 
     // people will use capitals instead -- do what they mean.
@@ -121,7 +125,11 @@ private:
   int position_showing = -1;
   long refresh_ms = -1;
 
-  void debug();
-  void debug(char c);
-  void debug(int i);
+  void pin_high(PinFunction fn);
+  void pin_low(PinFunction fn);
+  void set_fn_pin(PinFunction fn, bool val);
+  void set_point_pin(bool val);
 };
+
+
+
