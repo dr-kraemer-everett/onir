@@ -1,7 +1,7 @@
 #include "uno_pinout.h"
 
-int set_pin(Interface pinout, PinFunction pf, int pin) {
-  return pinout[(int)pf] = pin;
+int set_pin(Interface pinout, PinFunction fn, int pin) {
+  return pinout[(int)fn] = pin;
 }
 
 int* set_uno_pinout(Interface pinout) {

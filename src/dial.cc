@@ -17,8 +17,8 @@ Dial::Dial(Interface pinout) {
 }
 
 void Dial::attach(DialDevice* d) {
-  device->init();
   device = d;
+  device->init();
 }
 
 void Dial::update() {

@@ -7,6 +7,9 @@
 #include "uno_pinout.h"
 #include "selector.h"
 
+ScreenDevice device;
+Screen screen;
+
 // io_device.ino
 // --------------
 // Top-level transport wrapper for IODevice.
@@ -20,7 +23,7 @@
 
 IODevice io;
 
-int I2C_ADDRESS = 8;
+int channel;
 
 unsigned long last_report = 0;
 
@@ -51,20 +54,22 @@ void on_request() {
 // --- Arduino lifecycle ---
 
 void setup() {
-  Serial.begin(9600);
+ Serial.begin(9600);
+  Serial.println("starting io display.");
+  int* pinout = set_uno_pinout(init_interface);
+  Dial dial;
+  DialDevice dial_device;
 
-  int pinout[(int)PinFunction::END] = {0,};
-//  pinout = set_uno_pinout(init_interface));
+  device.set_pinout(pinout);
+  dial_device.set_pinout(pinout);
+  dial.attach(&dial_device);
+  screen.attach(&device);
+  screen.set_point(-1);  // curious, this. must look into it.
+  channel = Selector(&dial, &screen).get_channel();
+  Serial.print("selected: ");
+  Serial.println(channel);
 
-    // Local hardware shakedown (temporary selector)
-  {
-    Selector selector(&pinout);
-    I2C_ADDRESS = selector.get_channel();
-  }
-
-  io.set_pinout(pinout);
-
-  Wire.begin(I2C_ADDRESS);
+  Wire.begin(channel);
   Wire.onReceive(on_receive);
   Wire.onRequest(on_request);
 }
@@ -75,6 +80,7 @@ void loop() {
   unsigned long now = millis();
   if (now - last_report >= 3000) {
     last_report = now;
+    io.state.screen.chars[3]++;
     Serial.print("state checksum: ");
     Serial.println(checksum(io.state));
   }

@@ -7,7 +7,7 @@ DialDevice::DialDevice(Interface p) : DialDevice() {
     init();
   }
 
-void DialDevice::set_pinout(int p[(int)PinFunction::END]) {
+void DialDevice::set_pinout(Interface p) {
   pinout = p;
   init();
 }
