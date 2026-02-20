@@ -4,6 +4,7 @@
 #include "dial_device.h"
 #include "uno_pinout.h"
 #include "selector.h"
+#include "onir.h"
 
 #include "Wire.h"
 

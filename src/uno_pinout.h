@@ -4,4 +4,4 @@
 
 using PF = PinFunction;
 
-int* set_uno_pinout(int* pinout);
+int* set_uno_pinout(Interface pinout);

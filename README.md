@@ -9,6 +9,10 @@ The name 'onir' may sound dreamy, but it's also short for "oh, nothing I'd recom
 
 2026-02-20:
 
+11 & 12: Get rid of [(int)PinFunction::END] clutter (It's meaningless to students.)
+
+I added a 'using' declaration to turn a bunch of visual clutter into a word, except where C++ made that difficult for me. (https://chatgpt.com/share/6998ac1d-c3e8-8012-9a14-e79c23442880)
+
 9: Remove CharDisplay/CharDevice and associated demos; organize demos. 
 
 8: Add a class called Display that splits a string across a handful of screens and keeps them refreshed.

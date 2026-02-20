@@ -43,6 +43,7 @@ enum class PinFunction {
 extern int interface_size;
 
 using Interface = int[(int)PinFunction::END];
+
 extern Interface init_interface;
 
 struct DisplayState {

@@ -1,10 +1,10 @@
 #include "uno_pinout.h"
 
-int set_pin(int* pinout, PinFunction pf, int pin) {
+int set_pin(Interface pinout, PinFunction pf, int pin) {
   return pinout[(int)pf] = pin;
 }
 
-int* set_uno_pinout(int* pinout) {
+int* set_uno_pinout(Interface pinout) {
   for (int i = 0; i < interface_size; i++) {
     pinout[i] = 0;
   }

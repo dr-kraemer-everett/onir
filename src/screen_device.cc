@@ -17,7 +17,7 @@ ScreenDevice::ScreenDevice() {
   set_char_masks();
 }
 
-void ScreenDevice::set_pinout(int* pinout) {
+void ScreenDevice::set_pinout(Interface pinout) {
   for (int i = (int)PinFunction::DD_A; i <= (int)PinFunction::DD_4; i++) {
     device_pinout[i] = pinout[i];
     pinMode(pinout[i], OUTPUT);

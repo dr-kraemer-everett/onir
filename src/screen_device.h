@@ -18,7 +18,7 @@ public:
     state = s;
   }
 
-  void set_pinout(int* pinout);
+  void set_pinout(Interface pinout);
 
   void init();
 
