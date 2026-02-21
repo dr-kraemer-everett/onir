@@ -4,9 +4,7 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-Dial::Dial() {
-  zero();
-}
+Dial::Dial() { }
 
 Dial::Dial(int ch) : Dial() {
   set_channel(ch);
@@ -14,6 +12,7 @@ Dial::Dial(int ch) : Dial() {
 
 Dial::Dial(Interface pinout) {
   attach(new DialDevice(pinout));
+  zero();
 }
 
 void Dial::attach(DialDevice* d) {
@@ -27,12 +26,9 @@ void Dial::update() {
   }
   if (device) {
     device->read(state);
-    return;
   }
-
   if (channel >= 0) {
     Wire.requestFrom(channel, (int)sizeof(DialState));
-    
     if (Wire.available() == sizeof(DialState)) {
       Wire.readBytes((char*)&state, sizeof(DialState));
     }
@@ -43,6 +39,7 @@ void Dial::update() {
   if (millis() % 1000 == 0) {
     Serial.println("Dial not configured.");
   }
+
 }
 
 bool Dial::signal() {
@@ -51,4 +48,8 @@ bool Dial::signal() {
         return true;
     }
     return false;
+}
+
+long Dial::value() const {
+  return state.count - zero_offset;
 }

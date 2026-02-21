@@ -7,6 +7,23 @@ The name 'onir' may sound dreamy, but it's also short for "oh, nothing I'd recom
 
 # updates
 
+2026-02-21:
+
+Add IODevice and Control/Client, with demo sketches (remote device dial & screen).
+
+(Ditching the ordinal commit labels since git doesn't number things that way.)
+
+This year's least impressive bench demo: a dial and screen needing not just one board to run them, but now two! One side is running a Control looking for devices. If it finds one on channel 9, it reads the device's dial state, and writes the dial's value to the screen.
+
+C++ makes this just awkward enough to be annoying. I've committed my share of semicolons (if mostly long ago) and still much of what I spend time thinking about isn't what I want the program to do, but how to make the type system accept it without littering the code with the kind of copy this to that / that back to this 'helper' functions I've a saddening fraction of production code comprise. (sometimes running on big metal, at least by the standards of the time.)
+
+The bot (link updated) was of limited help here. The fact that it's a pattern-matching system works against it here. It found way the code is fairly simple at most levels perplexing, despite its frequent hectoring about clean layer boundaries.
+
+It particularly kept trying to push the Wire code further up- and down-stack and through more of the logic. As currently written the client code only needs to know that there's something called a Wire that it can call with a particular phone number and either give or take a message. The device code doesn't know anything at all about I2C -- the sketch just directly tinkers with its public state member. I find the way it seemed to think the *lack* of confusing I2C code in the files was something requiring a lot of alarmed-sounding explanatory comments written to... someone? (My students aren't gonna ask why the telephone set isn't out on the desk.)
+
+It was, however, fairly useful for writing pretty-print functions and other such utilities. And I half-expect that it will spot the pointer error crashing the demo immediately -- it's fairly good with that kind of thing.
+
+
 2026-02-20:
 
 11 & 12: Get rid of [(int)PinFunction::END] clutter (It's meaningless to students.)

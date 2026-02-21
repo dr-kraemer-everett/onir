@@ -19,28 +19,31 @@
 
 class IODevice {
 public:
-  IODevice() {}
+  IODevice();
 
-  void set_pinout(int* pinout) {
-    pinout_ = pinout;
-    screen_.set_pinout(pinout);
-    dial_.set_pinout(pinout);
+  void set_pinout(int* p) {
+    pinout = p;
+    screen->set_pinout(pinout);
+    dial->set_pinout(pinout);
   }
 
   void update() {
     // Update dial state from hardware
-    dial_.read(state.dial);
+    dial->read(state.dial);
 
     // Push screen state to hardware (scan / refresh)
-    screen_.state = state.screen;
-    screen_.refresh();
+    screen->state = state.screen;
+    screen->refresh();
   }
 
   IOState state;   // shared storage (transport reads/writes this)
 
 private:
-  int* pinout_ = 0;
+  int* pinout = 0;
 
-  ScreenDevice screen_;
-  DialDevice dial_;
+  DialDevice* dial;
+  ScreenDevice* screen;
+
+
+  
 };

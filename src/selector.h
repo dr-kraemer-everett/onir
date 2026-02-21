@@ -11,7 +11,7 @@ public:
   Selector(Dial* d, Screen* s) {
     dial = d;
     screen = s;
-    channel = 9;  // a dial gets channel 8 by default.
+    channel = ONIR_CHANNEL;
   }
 
   Selector(int (*p)[(int)PinFunction::END]);

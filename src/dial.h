@@ -19,9 +19,8 @@ public:
   void update();
   bool signal();
 
-  long value() const {
-    return state.count - zero_offset;
-  }
+  long value() const;
+  
   bool button() const {
     return state.button;
   }

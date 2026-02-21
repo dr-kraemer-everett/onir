@@ -7,6 +7,8 @@
 
 void Screen::init(int c) {
   channel = c;
+  Serial.print("SCREEN: ");
+  Serial.println(c);
 }
 
 void Screen::refresh() {

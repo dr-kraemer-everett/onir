@@ -1,43 +1,19 @@
-// CANNOT DO ANYTHING USEFUL
-// work in progress
+// Binds Wire callbacks to addresses in IODevice::state.
 
 #include <Wire.h>
 
 #include "io_device.h"
 #include "uno_pinout.h"
 #include "selector.h"
+#include "log.h"
 
 ScreenDevice device;
 Screen screen;
 
-// io_device.ino
-// --------------
-// Top-level transport wrapper for IODevice.
-//
-// IODevice knows nothing about I2C.
-// This sketch binds Wire callbacks to IODevice::state.
-//
-// Extras for bench sanity:
-//   - Channel selector at startup (local hardware shakedown)
-//   - Periodic checksum print of IOState (every 3 seconds)
-
+int* pinout = set_uno_pinout(init_interface);
 IODevice io;
 
 int channel;
-
-unsigned long last_report = 0;
-
-// --- helpers ---
-
-unsigned long checksum(const IOState& s) {
-  const byte* p = (const byte*)&s;
-  unsigned long sum = 0;
-  for (int i = 0; i < (int)sizeof(IOState); i++)
-    sum += p[i];
-  return sum;
-}
-
-// --- I2C handlers ---
 
 void on_receive(int n_bytes) {
   int n = n_bytes;
@@ -51,12 +27,10 @@ void on_request() {
   Wire.write((byte*)&io.state.dial, (int)sizeof(DialState));
 }
 
-// --- Arduino lifecycle ---
-
 void setup() {
  Serial.begin(9600);
-  Serial.println("starting io display.");
-  int* pinout = set_uno_pinout(init_interface);
+  log_winks = 10;  // I need a second.
+  Serial.println("starting io device");
   Dial dial;
   DialDevice dial_device;
 
@@ -64,10 +38,12 @@ void setup() {
   dial_device.set_pinout(pinout);
   dial.attach(&dial_device);
   screen.attach(&device);
-  screen.set_point(-1);  // curious, this. must look into it.
+  screen.set_point(-1);
   channel = Selector(&dial, &screen).get_channel();
+
   Serial.print("selected: ");
   Serial.println(channel);
+  io.set_pinout(pinout);
 
   Wire.begin(channel);
   Wire.onReceive(on_receive);
@@ -76,12 +52,5 @@ void setup() {
 
 void loop() {
   io.update();
-
-  unsigned long now = millis();
-  if (now - last_report >= 3000) {
-    last_report = now;
-    io.state.screen.chars[3]++;
-    Serial.print("state checksum: ");
-    Serial.println(checksum(io.state));
-  }
+  log(io.state);
 }

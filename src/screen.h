@@ -89,7 +89,7 @@ private:
       for (int j = 0; j < 4 - k - 1; j++) {
         modulus *= 10;
       }
-      put_char(k, (value / modulus) % 10);
+      put_char(k, '0' + (value / modulus) % 10);
       if (!(value / (modulus * 10))) return;
     }
   }
