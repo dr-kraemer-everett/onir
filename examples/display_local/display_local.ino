@@ -1,9 +1,13 @@
 #include "display.h"
 #include "display_device.h"
 #include "uno_pinout.h"
+#include "uno_io.h"
+#include "hardware.h"
+
+Hardware hardware = { };
 
 Display display;
-DisplayDevice device;
+DisplayDevice* device;
 
 void banner() {
   display.put_str("onir");
@@ -13,8 +17,10 @@ void banner() {
 
 void setup() {
   Serial.begin(9600);
-  device.set_pinout(set_uno_pinout(init_interface));
-  display.attach(&device);
+  uno_io(hardware);
+  device = new DisplayDevice(hardware);
+  device->set_pinout(set_uno_pinout(init_interface));
+  display.attach(device);
   banner();
 }
 
