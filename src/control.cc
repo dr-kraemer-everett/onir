@@ -22,7 +22,3 @@ void Control::update() {
     }
   }
 }
-
-void Control::set_pinout(Interface pinout) {
-  clients[LOCAL] = new Client(pinout, hardware);
-}

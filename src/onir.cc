@@ -1,21 +1,12 @@
 #include "onir.h"
-
 #include "control.h"
 #include "screen.h"
 
 #include "Arduino.h"
 
-Interface init_interface;
-
-int interface_size = (int)PinFunction::END;
-
-Onir::Onir(int* channels, int count, const Hardware& hw) : hardware(hw) {
+Onir::Onir(int* channels, int count, const Hardware& hardware) : hardware(hardware) {
   control = new Control(channels, count, hardware);
   screen = new Screen(control);
-}
-
-void Onir::set_pinout(Interface pinout) {
-  control->set_pinout(pinout);
 }
 
 void Onir::display(char* message) {

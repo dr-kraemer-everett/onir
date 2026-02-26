@@ -2,14 +2,15 @@
 #include "display_device.h"
 #include "dial.h"
 #include "dial_device.h"
-#include "uno_pinout.h"
+#include "uno_io.h"
 #include "selector.h"
 #include "onir.h"
 
 #include "Wire.h"
 
-DisplayDevice device;
+DisplayDevice* device;
 Display display;
+Hardware hardware = { };
 
 int channel;
 
@@ -33,13 +34,13 @@ void clear() {
     return;
   }
   if (millis() > start_millis + channel_display_ms) {
-    device.clear();
+    device->clear();
     channel_display = false;
   }
 }
 
 void update_display(int message_size) {
-  Wire.readBytes((byte*)&device.state, message_size);
+  Wire.readBytes((byte*)&(device->state), message_size);
   recieved = true;
 }
 
@@ -63,13 +64,11 @@ void setup() {
   Serial.begin(9600);
   Serial.println("starting character display.");
   Serial.println("start ms: " + String(start_millis));
-  int* pinout = set_uno_pinout(init_interface);
+  uno_io(hardware);
   Dial dial;
-  DialDevice dial_device;
-
-  device.set_pinout(pinout);
-  dial_device.set_pinout(pinout);
+  dial_device = new DialDevice(hardware);
   dial.attach(&dial_device);
+
   display.attach(&device);
   channel = Selector(&dial, &display).get_channel();
   Serial.print("selected: ");

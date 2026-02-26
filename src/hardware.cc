@@ -6,10 +6,10 @@ int assign(Hardware hardware, PinFunction fn, int pin) {
   return hardware[(int)fn] = pin;
 }
 
-bool unset(const Hardware& hardware) {
+bool empty(const Hardware& hardware) {
   for (int fn = (int)PinFunction::NONE; fn < hardware_size; fn++) {
-    if (hardware[fn] != 0) {
-      return true;
+    if (hardware[fn] > 0) {
+      return false;  // found a good value
     }
   }
   return false;

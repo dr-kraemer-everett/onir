@@ -8,7 +8,6 @@ class Dial {
 public:
   Dial(const Hardware& hw = no_hardware);
   Dial(int ch, const Hardware& hw = no_hardware);
-  Dial(Interface pinout, const Hardware& hw = no_hardware);
 
   void attach(DialDevice* d);
   

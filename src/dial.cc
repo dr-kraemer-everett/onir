@@ -15,7 +15,6 @@ Dial::Dial(int ch, const Hardware& hardware) : hardware(hardware) {
 
 void Dial::attach(DialDevice* d) {
   device = d;
-  device->init();
 }
 
 void Dial::update() {

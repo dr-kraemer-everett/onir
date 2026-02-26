@@ -4,8 +4,9 @@
 
 class Client {
 public:
+  Client(const Hardware& hw = no_hardware);
   Client(int channel, const Hardware& hw = no_hardware);
-  Client(Interface pinout, const Hardware& hw = no_hardware);
+
   void update();
   Dial dial;
   Display display;

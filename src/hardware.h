@@ -46,4 +46,4 @@ extern const Hardware no_hardware;
 
 int assign(Hardware hardware, PinFunction fn, int pin);
 int dispatch(const Hardware& hardware, PinFunction fn);
-bool unset(const Hardware&);
+bool empty(const Hardware&);

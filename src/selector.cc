@@ -2,19 +2,12 @@
 
 #include "Arduino.h"
 
-Selector::Selector(int (*p)[(int)PinFunction::END], const Hardware& hardware) : hardware(hardware) {
+Selector::Selector(const Hardware& hardware) : hardware(hardware) {
   button_down = false;
-  pinout = p;
 }
 
-
-Selector::Selector(Dial* d, Display* s, bool button=false, const Hardware& hardware)
-  : hardware(hardware) {
-    dial = d;
-    display = s;
-    channel = MIN_CHANNEL;
-    button_down=button;
-  }
+Selector::Selector(Dial* dial, Display* display, bool button=false, const Hardware& hardware)
+  : dial(dial), display(display), button_down(button), hardware(hardware) { }
 
 void Selector::channel_up() {
   if (channel < max_channel) {
@@ -51,10 +44,7 @@ void Selector::display_channel() {
 
 int Selector::get_channel() {
   Serial.print("channel: ");
-  Dial local_dial(pinout, hardware);;
-  // TODO: breaks non-local selector dial. fix after interface/pinout is gone.
-//    local_dial = Dial(pinout, hardware);
-//  }
+  Dial local_dial(hardware);;
   display_channel();
   long value = dial->value();
   dial->update();

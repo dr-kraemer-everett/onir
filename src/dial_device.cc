@@ -3,17 +3,12 @@
 #include "Arduino.h"
 
 DialDevice::DialDevice(const Hardware& hardware) : hardware(hardware) {
-  init();
-}
-
-void DialDevice::init() {
-  if (not unset(hardware)) {
+  if (not empty(hardware)) {
     pinMode(dispatch(hardware, PinFunction::CLOCK),  INPUT_PULLUP);
     pinMode(dispatch(hardware, PinFunction::DATA),  INPUT_PULLUP);
     pinMode(dispatch(hardware, PinFunction::SWITCH),  INPUT_PULLUP);
   }
-  // assume the recent past was boring.
-  clock = true;
+  clock = true;   // assume the recent past was boring.
 }
 
 bool DialDevice::clock_pin() const {

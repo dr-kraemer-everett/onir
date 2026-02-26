@@ -2,6 +2,10 @@
 
 void uno_io(Hardware hardware) {
 
+  for (int fn = (int)PF::NONE + 1; fn < (int)PF::END - 1; fn++) {
+    assign(hardware, (PinFunction)fn, -1); // it's rude to yell at the modem
+  }
+
   // digit display
   assign(hardware, PF::DD_A, 6);
   assign(hardware, PF::DD_B, 2);
@@ -22,5 +26,4 @@ void uno_io(Hardware hardware) {
   assign(hardware, PF::DATA, 16);    // A2
   assign(hardware, PF::SWITCH, 15);  // A1
 }
-
 

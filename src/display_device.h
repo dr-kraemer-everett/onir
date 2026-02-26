@@ -18,19 +18,12 @@ public:
     state = s;
   }
 
-  void set_pinout(Interface pinout);
-
-  void init();
-
   void refresh();
-
+  void clear();
+  
   DisplayState state;
   
-  void clear();
-
 private:
-
-  Interface device_pinout;
 
   // Map positions to position/cathode pins.
   PinFunction positions[4];
@@ -38,13 +31,13 @@ private:
   // segment/anode pins
   PinFunction segments[7];
 
-  Interface segment_masks;
+  Hardware segment_masks;
   int sm(char seg) {
     return segment_masks[(int)PF::DD_A + (int)seg - (int)'A'];
   }
 
   void set_segment_masks() {
-    for (int i = 0; i < interface_size; i++) {
+    for (int i = 0; i < hardware_size; i++) {
       segment_masks[i] = 0;
     }
     for (int i = (int)PF::DD_A; i <= (int)PF::DD_G; i++) {
@@ -54,13 +47,14 @@ private:
 
   /*
   segment names:
-  |   AAAAA
-  | FF     BB
-  | FF     BB
-  |   GGGGG
-  | EE     CC
-  | EE     CC PP
-  |   DDDDD   PP
+  
+      AAAAA
+    FF     BB
+    FF     BB
+      GGGGG
+    EE     CC
+    EE     CC PP
+      DDDDD   PP
   */
 
   int char_masks[N_CHAR_MASKS];
@@ -121,14 +115,17 @@ private:
 
   const int ms_per_digit = 1;
   const int ms_per_cycle = 4 * ms_per_digit;
-  int position_to_show();
   int position_showing = -1;
   long refresh_ms = -1;
 
+  int position_to_show();
+  void set_fn_pin(PinFunction fn, bool val);
+
+  // TODO: rename to fn_high? fn_active? (anode/cathode aware)
   void pin_high(PinFunction fn);
   void pin_low(PinFunction fn);
-  void set_fn_pin(PinFunction fn, bool val);
   void set_point_pin(bool val);
+
 
   const Hardware& hardware;
 };

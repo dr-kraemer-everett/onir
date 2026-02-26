@@ -12,8 +12,6 @@ public:
   void update();
   int count() {return count_;}
 
-  void set_pinout(Interface pinout);
-
   Client* clients[BANDS];
  
 private:

@@ -7,6 +7,14 @@ The name 'onir' may sound dreamy, but it's also short for "oh, nothing I'd recom
 
 # updates
 
+2025-02-25:
+
+Sliced out little bits of the Interface code in manageable chunks until I couldn't work out how to get more out without function template evasion shenanigans. Then I switched modes into "delete it all and sort it out later."
+
+So right now the device-level scripts work fine (i.e., display_local, dial_client...) but the larger demos (anything using the channel selector, for instance) are still a mess. If you want to pull, do it from a different branch. I'll merge this one back in when everything is working again.
+
+No more tonight -- it's late.
+
 2026-02-24:
 
 Add hardware.h, meant to replace Interface* pinout mess.
