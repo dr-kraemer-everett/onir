@@ -38,6 +38,12 @@ public:
   void erase() {
     for (int i = 0; i < WIDTH; i++) {
       display_[i] = 0;
+      // TODO(jeremy):
+      // 1. in notebook explain why this is a bug.
+      // 2. activate the bug in two opposite ways. take notes on what changes.
+      // 3. fix the bug.
+      // 4. test the fix (try the same things that activated it last time). note down results.
+      // 5. send me a pull request with the fix.
       positions_[i] = 0;
     }
     message_ = 0;
