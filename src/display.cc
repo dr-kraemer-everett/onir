@@ -33,8 +33,9 @@ String chars(DisplayState state) {
   return String(result);
 }
 
+// TODO: unify handling for this logic before adding servos.
 void Display::send_update() {
-  if (channel < 0) return;
+  if (channel < MIN_CHANNEL) return;
   Wire.beginTransmission(channel);
   Wire.write((const byte*) &state, (int)sizeof(DisplayState));
   Wire.endTransmission();

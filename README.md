@@ -7,6 +7,18 @@ The name 'onir' may sound dreamy, but it's also short for "oh, nothing I'd recom
 
 # updates
 
+2025-02-28:
+
+(rename: enum PinFunction->Function; int hardware_size->interface)
+
+Bit of light renaming before I try to get the last demo working. I was using channel 0 inside the screen class to run local hardware. But that was when the interface setup was a fragile mess that I meant to replace and was loathe to handle more than needed before excision. Now that's done, the right way to handle this is at the controller level. Give the controller hardware and it'll set up a client on 'channel 0' using that hardware.
+
+This novel contraption has odd qualms. (And I can be a qualmy guy -- ask anyone!) In I2C, channel zero is for special use. The chatbot was **very** alarmed at the idea of my jacking it for the local. But on this particular hardware network I'm designing, I don't anticipate an *even more special use* than running the single client's own hardware. The device clients just ignore you if you try to send a message on an invalid channel, so the fallout here should be limited.
+
+Anyway, when I put together the screen client (a scrolling-message device), because the dial and display clients seemed solid (and still do, so far) I was *bad* and skipped straight to the over-the-wire version. Then when I unthinkingly tried to the obvious and use the same trick on the client the heap of course blew up. (don't even try to think through the results here -- even in a program this small, "double-local-client" is way into vorpal-bunnies-ate-my-socks / "Her mind has been permanently Demented." territory.)
+
+To atone, I must do what is needed (barring regression) to get the local, single board, dial-scrolled screen working. Then, and only then, will I turn back to the multi-device setup and the in-stream channel selector.
+
 2025-02-26:
 
 Get display_channel working. (uses channel selector.)

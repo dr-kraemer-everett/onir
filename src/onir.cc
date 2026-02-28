@@ -16,9 +16,17 @@ void Onir::display(char* message) {
 void Onir::act() {
   if (go()) {
     screen->pan(1);
-    if (control->clients[8]) {
-      log_io(control->clients[8]);
+    for (int i = 0; i < BANDS; i++) {
+      if (control->clients[i]) {
+        Serial.println(i);
+        delay(10);
+        log_io(control->clients[i]);
+        delay(10);
+      }
     }
+    // if (control->clients[8]) {
+    //   log_io(control->clients[8]);
+    // }
   }
 }
 
