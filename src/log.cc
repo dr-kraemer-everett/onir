@@ -81,12 +81,13 @@ void left_pad(int v) {
   if (v > -10  && v < 10)  Serial.print(' ');
 }
 
-void print_io(const IOState& state) {
-
-  static unsigned int log_id = 0;
-
+void log_id() {
+  static int log_id_ = 0;
   Serial.print('#');
-  Serial.print(log_id++);
+  Serial.print(log_id_++);
+}
+
+void print_io(const IOState& state) {
   Serial.print(" {c: ");
   Serial.print(state.channel);
   Serial.print(", s: {m: ");
@@ -120,5 +121,11 @@ void mirror_device_clients(Client* client) {
 }
 
 void log_io(Client* client) {
+  log_id();
+  if (not client) {
+    Serial.println("0");
+    return;
+  }
   mirror_device_clients(client);
-  print_io(client->local_); }
+  print_io(client->local_);
+}

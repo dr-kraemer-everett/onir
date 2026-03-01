@@ -11,7 +11,7 @@ public:
 
   void update();
   int count() {return count_;}
-  int local() {return local_;}
+  Client* local() {return clients[local_];}
 
   Client* clients[BANDS];
 

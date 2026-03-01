@@ -16,14 +16,9 @@ void Onir::display(char* message) {
 void Onir::act() {
   if (go()) {
     screen->pan(1);
-    for (int i = 0; i < BANDS; i++) {
-      if (control->clients[i]) {
-        log_io(control->clients[i]);
-      }
+    if (control->local()) {
+      log_io(control->local());
     }
-    // if (control->clients[8]) {
-    //   log_io(control->clients[8]);
-    // }
   }
 }
 

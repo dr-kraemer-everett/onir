@@ -39,7 +39,7 @@ public:
       display_[i] = 0;
     }
     for (int i = 0; i < BANDS; i++) {
-      positions_[i] = 0;
+      baselines_[i] = 0;
     }
     message_ = 0;
     index_ = 0;
@@ -65,21 +65,21 @@ public:
   int width() const { return length(display_); }
 
   void show() {
-    const int local = control_->local();
+    Client* const local = control_->local();
     for (int channel = 0; channel < BANDS; channel++) {
       if (Client* client = control_->clients[channel]) {
-        for (int i = 0; i < 4; i++) {
-          int position = positions_[channel];                      // channel position
-          position += i;                                           // digit offset
-          position += index_;                                      // pan offset
-          if (control_->clients[local]) {
-            position += control_->clients[local]->dial.value();    // control offset
+        for (int spot = 0; spot < 4; spot++) {
+          int offset = spot;
+          offset += index_;                             // client pan
+          offset += baselines_[channel];                // channel baseline
+          // late read -> fewer dial side-effects
+          if (local) {
+            offset += local->dial.value();              // control offset
           }
-          if (channel != local) {
-            position += client->dial.value();                      // device offset
+          if (client != local) {
+            offset += client->dial.value();             // device offset
           }
-          // late-read pattern restricts use of dial value to this spot. (no branches below.)
-          client->display.put_char(i, at(position));
+          client->display.put_char(spot, at(offset));
         }
       }
     }
@@ -93,12 +93,12 @@ private:
   void fan() {  // Sequence channel offsets from zero.
     index_ = 0;
     for (int channel = 0; channel < BANDS; channel++) {
-      positions_[channel] = 0;
+      baselines_[channel] = 0;
     }
     int count = 0;
     for (int channel = 0; channel < BANDS; channel++) {
       if (control_->clients[channel]) {
-        positions_[channel] = 4 * count++;
+        baselines_[channel] = 4 * count++;
       }
     }
     show();
@@ -139,7 +139,7 @@ private:
   const char* message_;
   char display_[margin];
   int index_;
-  int positions_[BANDS];
+  int baselines_[BANDS];
   bool fan_start_ = true;
 
   const Hardware& hardware;  
