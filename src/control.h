@@ -1,9 +1,8 @@
 #pragma once
 
-#include "client.h"
-
 #define BANDS 16      // first eight spots unused. (https://i2cdevices.org/addresses)
-#define LOCAL 0       // zero = here  
+
+#include "client.h"
 
 class Control {
 public:
@@ -12,12 +11,13 @@ public:
 
   void update();
   int count() {return count_;}
+  int local() {return local_;}
 
   Client* clients[BANDS];
- 
+
 private:
   int count_ = 0;
-  const Hardware& hardware;
+  const int local_ = 0;
 };
 
 

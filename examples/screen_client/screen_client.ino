@@ -6,8 +6,8 @@
 
 #include "Wire.h"
 
-const int N_CHANNELS = 5;
-int channels[N_CHANNELS] = { 8, 9, 10, 11, 12 };
+const int count = 5;
+int channels[count] = { 8, 9, 10, 11, 12 };
 
 Onir* onir;
 Hardware hardware = {};
@@ -22,7 +22,7 @@ void setup() {
   Serial.println("start");
   log_winks = 25;
   uno_io(hardware);
-  onir = new Onir(channels, N_CHANNELS, hardware);
+  onir = new Onir(channels, count, hardware);
   onir->screen->display(message);
   Wire.begin();
 }

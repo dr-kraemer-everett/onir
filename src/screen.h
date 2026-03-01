@@ -70,16 +70,17 @@ public:
   int width() const { return length(display_); }
 
   void present() {
+    const int local = control_->local();
     for (int channel = 0; channel < BANDS; channel++) {
       if (Client* client = control_->clients[channel]) {
         for (int i = 0; i < 4; i++) {
           int position = positions_[channel];                      // channel position
           position += i;                                           // digit offset
           position += index_;                                      // pan offset
-          if (control_->clients[LOCAL]) {
-            position += control_->clients[LOCAL]->dial.value();    // control offset
+          if (control_->clients[local]) {
+            position += control_->clients[local]->dial.value();    // control offset
           }
-          if (channel != LOCAL) {
+          if (channel != local) {
             position += client->dial.value();                      // device offset
           }
           // late-read pattern restricts use of dial value to this spot. (no branches below.)

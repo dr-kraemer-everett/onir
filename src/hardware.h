@@ -40,7 +40,7 @@ enum class Function {
   
     };
 
-const int interface = (int)Function::COUNT;  // TODO interface
+const int interface = (int)Function::COUNT;
 using Hardware = int[interface];
 extern const Hardware no_hardware;
 
