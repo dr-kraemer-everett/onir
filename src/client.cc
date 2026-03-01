@@ -4,11 +4,9 @@
 
 #include "Arduino.h"
 
-Client::Client(int channel) :
-  channel(channel), dial(channel), display(channel) { }
+Client::Client(int channel) : dial(channel), display(channel) { }
   
-Client::Client(const Hardware& hardware) :
-  dial(hardware), display(hardware) { }
+Client::Client(const Hardware& hardware) : dial(hardware), display(hardware) { }
 
 void Client::update() {
   dial.update();

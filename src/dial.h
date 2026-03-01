@@ -12,7 +12,11 @@ public:
   void attach(DialDevice* d);
   
   void set_channel(int ch) {
-    channel = ch;
+    channel_ = ch;
+  }
+
+  int channel() {
+    return channel_;
   }
 
   void update();
@@ -39,7 +43,7 @@ public:
   DialState state;
 
 private:
-  int channel = -1;  // -1 means unset
+  int channel_ = -1;  // -1 means unset
   int zero_offset = 0;
   int down_offset = 0;
   

@@ -4,7 +4,7 @@
 
 class DialDevice {
 public:
-  DialDevice(const Hardware& hardware = no_hardware);
+  DialDevice(const Hardware& hardware);
   void read(DialState& state);
 
 private:

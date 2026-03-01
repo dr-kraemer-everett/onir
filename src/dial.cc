@@ -22,8 +22,8 @@ void Dial::update() {
     device->read(state);
     return;
   }
-  if (channel >= MIN_CHANNEL) {
-    Wire.requestFrom(channel, (int)sizeof(DialState));
+  if (channel_ >= MIN_CHANNEL) {
+    Wire.requestFrom(channel_, (int)sizeof(DialState));
     if (Wire.available() == sizeof(DialState)) {
       Wire.readBytes((char*)&state, sizeof(DialState));
     }
