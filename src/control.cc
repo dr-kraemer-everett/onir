@@ -2,12 +2,13 @@
 
 #include "Arduino.h"
 
-Control::Control(const Hardware& hardware = no_hardware) {
+Control::Control(const Hardware& hardware) {
   if (not empty(hardware)) {
     clients[local_] = new Client(hardware);
     return;
   }
-  Serial.println("Control needs channels or hardware.");
+  Serial.println("Control needs channels or hardware. (expect a crash.)");
+  delay(1000);
 }
 
 Control::Control(int* channels, int ct, const Hardware& hardware) {

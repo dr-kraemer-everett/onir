@@ -4,18 +4,17 @@
 #include "control.h"
 #include "log.h"
 
-#define WIDTH 256
+const static int margin = 256;
 
 // Splits a string across a handful of displays and keeps them refreshed.
 class Screen {
 
 public:
-  Screen(const Hardware& hardware = no_hardware) : control_(new Control(hardware)) {
+  Screen(const Hardware& hardware) : control_(new Control(hardware)) {
     clear();
   }
   
-  Screen(Control* control, const Hardware& hardware = no_hardware)
-    : control_(control), hardware(hardware) {
+  Screen(Control* control) : control_(control) {
     clear();
   }
 
@@ -36,14 +35,10 @@ public:
   }
   
   void erase() {
-    for (int i = 0; i < WIDTH; i++) {
+    for (int i = 0; i < margin; i++) {
       display_[i] = 0;
-      // TODO(jeremy):
-      // 1. in notebook explain why this is a bug.
-      // 2. activate the bug in two opposite ways. take notes on what changes.
-      // 3. fix the bug.
-      // 4. test the fix (try the same things that activated it last time). note down results.
-      // 5. send me a pull request with the fix.
+    }
+    for (int i = 0; i < BANDS; i++) {
       positions_[i] = 0;
     }
     message_ = 0;
@@ -53,23 +48,23 @@ public:
   void display(const char* message) {
     message_ = message;
     record();
-    present();
+    show();
   }
 
   void pan(int move) {
     index_ += move;
-    present();
+    show();
   }
 
   void seek(int index) {
     index_ = index;
-    present();
+    show();
   }
 
   int index() const { return index_; }
   int width() const { return length(display_); }
 
-  void present() {
+  void show() {
     const int local = control_->local();
     for (int channel = 0; channel < BANDS; channel++) {
       if (Client* client = control_->clients[channel]) {
@@ -106,7 +101,7 @@ private:
         positions_[channel] = 4 * count++;
       }
     }
-    present();
+    show();
   }
 
   int record() {                                // may pad start/end:
@@ -115,13 +110,13 @@ private:
     if (receipt and message_[0] != ' ') {
       display_[length++] = ' ';                 // left-pad
     }
-    for (int i = 0; (i < receipt) and (length < WIDTH - 1);) {
+    for (int i = 0; (i < receipt) and (length < margin - 1);) {
       display_[length++] = message_[i++];       // copy message
     }
     while (length < 4) {                        // pad to 4
       display_[length++] = ' ';
     }
-    if (display_[length-1] != ' '  and length < WIDTH - 2) {
+    if (display_[length-1] != ' '  and length < margin - 2) {
       display_[length++] = ' ';                 // right-pad
     }      
     display_[length] = 0;                       // terminate
@@ -142,7 +137,7 @@ private:
   
   Control* const control_;
   const char* message_;
-  char display_[WIDTH];
+  char display_[margin];
   int index_;
   int positions_[BANDS];
   bool fan_start_ = true;

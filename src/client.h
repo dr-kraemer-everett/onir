@@ -4,8 +4,8 @@
 
 class Client {
 public:
-  Client(const Hardware& hw = no_hardware);
-  Client(int channel, const Hardware& hw = no_hardware);
+  Client(const Hardware& hardware);
+  Client(int channel);
 
   void update();
   Dial dial;
@@ -13,6 +13,4 @@ public:
   int channel;
 
   IOState local_;  // for logging; use dial and display directly.
-private:
-  const Hardware& hardware;
 };

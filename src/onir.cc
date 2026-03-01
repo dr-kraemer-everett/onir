@@ -6,7 +6,7 @@
 
 Onir::Onir(int* channels, int count, const Hardware& hardware) : hardware(hardware) {
   control = new Control(channels, count, hardware);
-  screen = new Screen(control, hardware);
+  screen = new Screen(control);
 }
 
 void Onir::display(char* message) {
@@ -18,10 +18,7 @@ void Onir::act() {
     screen->pan(1);
     for (int i = 0; i < BANDS; i++) {
       if (control->clients[i]) {
-        Serial.println(i);
-        delay(10);
         log_io(control->clients[i]);
-        delay(10);
       }
     }
     // if (control->clients[8]) {
@@ -33,7 +30,7 @@ void Onir::act() {
 void Onir::update() {
   control->update();
   act();
-  screen->present();
+  screen->show();
 }
 
 int Onir::step() {
