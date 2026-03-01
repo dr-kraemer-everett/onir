@@ -6,13 +6,13 @@ class DialDevice;
 
 class Dial {
 public:
-  Dial(const Hardware& hw = no_hardware);
-  Dial(int ch, const Hardware& hw = no_hardware);
+  Dial(const Hardware& hardware);
+  Dial(int ch);
 
-  void attach(DialDevice* d);
+  void attach(DialDevice* device);
   
-  void set_channel(int ch) {
-    channel_ = ch;
+  void set_channel(int channel) {
+    channel_ = channel;
   }
 
   int channel() {

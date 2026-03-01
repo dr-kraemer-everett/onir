@@ -5,22 +5,25 @@
 
 #include "display_device.h"
 
-Display::Display(const Hardware& hardware) : hardware(hardware) {
+Display::Display(const Hardware& hardware) {
+  device = new DisplayDevice(hardware);
   clear();
 }
 
-Display::Display(int ch, const Hardware& hardware) : channel(ch), hardware(hardware) {
+Display::Display(int channel) : channel(channel) {
   clear();
 }
 
 void Display::refresh() {
+  if (device) {
+    device->refresh();
+  }
   if ((long)millis() - last_update > UPDATE_MILLIS) {
     last_update = millis();
     send_update();
-    update_local();
-  }
-  if (device) {
-    device->refresh();
+    if (device) {
+      device->update(state);  
+    }
   }
 }
 
@@ -39,11 +42,4 @@ void Display::send_update() {
   Wire.beginTransmission(channel);
   Wire.write((const byte*) &state, (int)sizeof(DisplayState));
   Wire.endTransmission();
-}
-
-
-void Display::update_local() {
-  if (device){
-    device->update(state);  
-  }
 }

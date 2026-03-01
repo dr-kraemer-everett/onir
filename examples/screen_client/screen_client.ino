@@ -4,8 +4,8 @@
 
 #include "Wire.h"
 
-const int count = 5;
-int channels[count] = { 8, 9, 10, 11, 12 };
+const int count = 2;
+int channels[count] = { 8, 9 };
 
 Onir* onir;
 Hardware hardware = {};

@@ -5,8 +5,8 @@
 DialDevice::DialDevice(const Hardware& hardware) : hardware(hardware) {
   if (not empty(hardware)) {
     pinMode(dispatch(hardware, Function::CLOCK),  INPUT_PULLUP);
-    pinMode(dispatch(hardware, Function::DATA),  INPUT_PULLUP);
-    pinMode(dispatch(hardware, Function::SWITCH),  INPUT_PULLUP);
+    pinMode(dispatch(hardware, Function::DATA),   INPUT_PULLUP);
+    pinMode(dispatch(hardware, Function::SWITCH), INPUT_PULLUP);
   }
   clock = true;   // assume the recent past was boring.
 }

@@ -4,7 +4,7 @@
 
 Control::Control(const Hardware& hardware) {
   if (not empty(hardware)) {
-    clients[local_] = new Client(hardware);
+    units[local_] = new Unit(hardware);
     return;
   }
   Serial.println("Control needs channels or hardware. (expect a crash.)");
@@ -14,22 +14,22 @@ Control::Control(const Hardware& hardware) {
 Control::Control(int* channels, int ct, const Hardware& hardware) {
   count_ = ct;
   for (int i = 0; i < BANDS; i++) {
-    clients[i] = 0;
+    units[i] = 0;
   }
 
   for (int i = 0; i < count_; i++) {
     int channel = channels[i];
-    clients[channel] = new Client(channel);
+    units[channel] = new Unit(channel);
   }
   if (not empty(hardware)) {
-    clients[local_] = new Client(hardware);
+    units[local_] = new Unit(hardware);
   }
 }
 
 void Control::check() {
-  for (Client* client : clients) {
-    if (client) {
-      client->update();
+  for (Unit* unit : units) {
+    if (unit) {
+      unit->update();
     }
   }
 }

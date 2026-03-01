@@ -41,18 +41,10 @@ void setup() {
   log_winks = 10;  // I need a second.
   Serial.println("starting io device");
   uno_io(hardware);
-  Dial dial;
-  DialDevice dial_device(hardware);
-  dial.attach(&dial_device);
-
-  display = new Display(hardware);
-  device = new DisplayDevice(hardware);
-
-  display = new Display;
-  display->attach(device);
-  display->set_point(-1);
-
-  channel = Selector(&dial, display, false, hardware).get_channel();
+  Dial dial(hardware);
+  Display display(hardware);
+  display.set_point(-1);
+  channel = Selector(&dial, &display, false, hardware).get_channel();
   Serial.print("selected: ");
   Serial.println(channel);
 

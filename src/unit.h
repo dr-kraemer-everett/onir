@@ -2,10 +2,10 @@
 #include "display.h"
 #include "dial.h"
 
-class Client {
+class Unit {
 public:
-  Client(const Hardware& hardware);
-  Client(int channel);
+  Unit(const Hardware& hardware);
+  Unit(int channel);
 
   void update();
   Dial dial;

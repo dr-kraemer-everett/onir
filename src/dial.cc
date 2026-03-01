@@ -4,11 +4,12 @@
 #include "Arduino.h"
 #include "Wire.h"
 
-Dial::Dial(const Hardware& hardware) : hardware(hardware) {
+Dial::Dial(const Hardware& hardware) {
+  device = new DialDevice(hardware);
   zero();
 }
 
-Dial::Dial(int ch, const Hardware& hardware) : hardware(hardware) {
+Dial::Dial(int ch) {
   zero();
   set_channel(ch);
 }

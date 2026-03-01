@@ -2,7 +2,7 @@
 
 #define BANDS 16      // first eight spots unused. (https://i2cdevices.org/addresses)
 
-#include "client.h"
+#include "unit.h"
 
 class Control {
 public:
@@ -11,9 +11,9 @@ public:
 
   void check();
   int count() {return count_;}
-  Client* local() {return clients[local_];}
+  Unit* local() {return units[local_];}
 
-  Client* clients[BANDS];
+  Unit* units[BANDS];
 
 private:
   int count_ = 0;

@@ -23,9 +23,9 @@ public:
     if (fan_start_) {
       fan();
     }
-    for (Client* client : control_->clients) {
-      if (client) {
-        client->dial.zero();
+    for (Unit* unit : control_->units) {
+      if (unit) {
+        unit->dial.zero();
       }
     }
   }
@@ -65,21 +65,21 @@ public:
   int width() const { return length(display_); }
 
   void show() {
-    Client* const local = control_->local();
+    Unit* const local = control_->local();
     for (int channel = 0; channel < BANDS; channel++) {
-      if (Client* client = control_->clients[channel]) {
+      if (Unit* unit = control_->units[channel]) {
         for (int spot = 0; spot < 4; spot++) {
           int offset = spot;
-          offset += index_;                             // client pan
+          offset += index_;                             // unit pan
           offset += baselines_[channel];                // channel baseline
           // late read -> fewer dial side-effects
           if (local) {
             offset += local->dial.value();              // control offset
           }
-          if (client != local) {
-            offset += client->dial.value();             // device offset
+          if (unit != local) {
+            offset += unit->dial.value();             // device offset
           }
-          client->display.put_char(spot, at(offset));
+          unit->display.put_char(spot, at(offset));
         }
       }
     }
@@ -97,7 +97,7 @@ private:
     }
     int count = 0;
     for (int channel = 0; channel < BANDS; channel++) {
-      if (control_->clients[channel]) {
+      if (control_->units[channel]) {
         baselines_[channel] = 4 * count++;
       }
     }

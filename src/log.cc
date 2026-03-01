@@ -1,5 +1,5 @@
 #include "log.h"
-#include "client.h"
+#include "unit.h"
 
 #include "Arduino.h"
 #include "string.h"
@@ -114,18 +114,18 @@ void print_io(const IOState& state) {
 }
 
 // local copy of dial and display contents (not definitive -- just read the dial!)
-void mirror_device_clients(Client* client) {
-  client->local_.channel = client->dial.channel();
-  memcpy(&client->local_.dial,   &client->dial.state,   sizeof(client->dial.state));
-  memcpy(&client->local_.display, &client->display.state, sizeof(client->display.state));
+void mirror_device_units(Unit* unit) {
+  unit->local_.channel = unit->dial.channel();
+  memcpy(&unit->local_.dial,   &unit->dial.state,   sizeof(unit->dial.state));
+  memcpy(&unit->local_.display, &unit->display.state, sizeof(unit->display.state));
 }
 
-void log_io(Client* client) {
+void log_io(Unit* unit) {
   log_id();
-  if (not client) {
+  if (not unit) {
     Serial.println("0");
     return;
   }
-  mirror_device_clients(client);
-  print_io(client->local_);
+  mirror_device_units(unit);
+  print_io(unit->local_);
 }

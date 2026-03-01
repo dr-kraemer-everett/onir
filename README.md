@@ -7,7 +7,23 @@ The name 'onir' may sound dreamy, but it's also short for "oh, nothing I'd recom
 
 # updates
 
-2025-02-28:
+2026-03-01:
+
+Rename Client -> Unit (conflicts with Arduino built-in Client). (also improves local unit in screen demo)
+
+I renamed Client to Unit because the former conflicted with one of Arduino's built-ins after I got rid of an argument.. A downside of trying to use short common words for names is that occasionally someone else has gotten there first. (Fair's fair.)
+
+This also caused the local screen cli^H^H^H^H unit to start showing the screen message! Sort of. It flickers a lot when there's a client attached. There's no flicker in the main branch, so I know this isn't just a basic limit I've hit. somewhere I'm wasting *most* of my time doing something pointless over and over.
+
+I swear my goal with this change wasn't to get the screen working again. But I must admit I'm seldom as fastidious about changes as I know I ought to be, so it's *proabably* one of those 'tweaks', and not just the rename that had this effect.
+
+The bot will be so excited if I give it this update. It's been constantly asking about jitter, despite my telling it there aren't any feedback loops here to cause the kind of back-and-forth overcorrection loop the term usually implies in robotics. This is all feed-forward, so everything should move right along.
+
+And then the local display on the scrolling screen client starts flickering, and so much for all that. But at least the demo has gone back to scrolling in response to both dials. The 'one dial moves all the displays' behavior doesn't need the local screen, so the basic demo is back to working.
+
+Next will be looking into the in-stream channel changer. Right now whatever I'm doing appears to just crash the device, though not in a way that improves display rate on the client's local until I reboot the remote device.
+
+2026-02-28:
 
 (rename: enum PinFunction->Function; int hardware_size->interface)
 
@@ -19,13 +35,13 @@ Anyway, when I put together the screen client (a scrolling-message device), beca
 
 To atone, I must do what is needed (barring regression) to get the local, single board, dial-scrolled screen working. Then, and only then, will I turn back to the multi-device setup and the in-stream channel selector.
 
-2025-02-26:
+2026-02-26:
 
 Get display_channel working. (uses channel selector.)
 
 Again, mostly just a matter of "is that plugged in? yes? what about that? ah..."
 
-2025-02-25:
+2026-02-25:
 
 Sliced out little bits of the Interface code in manageable chunks until I couldn't work out how to get more out without function template evasion shenanigans. Then I switched modes into "delete it all and sort it out later."
 
