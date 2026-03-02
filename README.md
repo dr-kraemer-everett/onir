@@ -40,11 +40,11 @@ This sketch only requires one Arduino Uno, one dial, and the 5-pin M/F breadboar
 
 |dial  | board
 |----: |---
-|GND  | GND 
-| +   | 5V
-|SW   | A1
-|DT   | A2
 |CL   | A3
+|DT   | A2
+|SW   | A1
+| +   | 5V
+|GND  | GND 
 
 Open the Serial Monitor with ```Tools > Serial Monitor``` or ```control-shift-M````. The monitor is a tool for talking to the board over the modem, and will show the numbers reported by the dial.
 
