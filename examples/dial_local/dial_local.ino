@@ -2,28 +2,26 @@
 #include "dial_device.h"
 #include "uno_io.h"
 
-Dial dial;
-DialDevice* device;
+Dial* dial;
 int dial_value;
 Hardware hardware = { };
 
 void setup() {
   Serial.begin(9600);
   uno_io(hardware);
-  device = new DialDevice(hardware);
-  dial.attach(device);
+  dial = new Dial(hardware);
   Serial.println("starting dial test");
-  dial_value = dial.value();
+  dial_value = dial->value();
 }
 
 void loop() {
-  dial.update();
-  if (dial_value != dial.value()) {
-    Serial.println(dial.value());
-    dial_value = dial.value();
+  dial->update();
+  if (dial_value != dial->value()) {
+    Serial.println(dial->value());
+    dial_value = dial->value();
   }
-  if (dial.press()) {
+  if (dial->press()) {
     Serial.println("zeroing (" + String(millis()) +")");
-    dial.zero();
+    dial->zero();
   }
 }
