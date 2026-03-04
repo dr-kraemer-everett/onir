@@ -7,7 +7,7 @@ int assign(Hardware hardware, Function fn, int pin) {
 }
 
 bool empty(const Hardware& hardware) {
-  for (int fn = (int)Function::NONE + 1; fn < interface; fn++) {  // skip null hardware function.
+  for (int fn = (int)Function::NONE + 1; fn < FUNCTION::COUNT; fn++) {  // skip empty hardware.
     if (hardware[fn] > 0) {
       return false;  // found a good value
     }

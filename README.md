@@ -45,9 +45,9 @@ If you don't see ```onir_device_interface``` at the bottom of ```Examples```, ch
 ## set up hardware
 
 You'll need a pair of boards with ko lab's basic IO setup. (Example board setups are on display.) The Uno IO setup has:
-   * a display attached to pins 2 through 14,
-   * a dial attached to pins A1-A3, and,
-   * an I2C pairing cable attached to the VIN/GND pair and the A4/A5 pair.
+   * a display attached to pins 2 through 14 via two ribbon cables
+   * a dial attached to pins A1-A3 + 5V/GND
+   * an I2C pairing cable attached to the GND/VIN pair and the A4/A5 pair.
 
 ### cable fabrication
 
@@ -58,13 +58,17 @@ If you haven't yet fabricated any cables for one of these devices, it's time to 
 If everyone in your group has already made a cable, that's great! You're not brand new at this, so now put together a **four box harness** for your group. These should **match** the color patterns you see around the lab. You know I don't want to shut down your creative ideas, but on this, ask before innnovating.
 
 Materials:
-	* four 5-pin headers
-	* two 4-pin headers
-	* two groups of 5 M/F wires for the dial. (match colors with existing hardware!)
-	* one double-pair for I2C (again, match the colors you see.)
+	* four 5-pin housings (Dupont connector header)
+	* two 4-pin housings
+	* two groups of 5 M/F wires for the dial. (match colors with existing lab hardware!)
+	* one double-pair for I2C (again, match the color patterns you see around you.)
 
-One nice thing about the harness is that it holds everything together.
-	. 
+By now you know from experience that adding **housings** to cables lets you make a one-time-job of the fiddly work of getting dozens of single cable ends placed just right. A **cable harness** levels up this idea of one-time cable placement. Instead of making a generic ribbon cable (like the display cables) or a function-splitter (like the dial cable and the I2C connector) to a piece of *dedicated hardware* for one particular circuit — in this case, the lab's standard Uno input/output (or, *I/O*) circuit.
+
+You've used this setup before. The
+
+
+
 
 ## run sketches
 

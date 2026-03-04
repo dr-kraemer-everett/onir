@@ -40,8 +40,7 @@ enum class Function {
   
     };
 
-const int interface = (int)Function::COUNT;
-using Hardware = int[interface];
+using Hardware = int[(int)Function::COUNT];
 extern const Hardware no_hardware;
 
 int assign(Hardware hardware, Function fn, int pin);

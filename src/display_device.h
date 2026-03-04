@@ -37,7 +37,7 @@ private:
   }
 
   void set_segment_masks() {
-    for (int i = 0; i < interface; i++) {
+    for (int i = 0; i < Fn::COUNT; i++) {
       segment_masks[i] = 0;
     }
     for (int i = (int)Fn::DD_A; i <= (int)Fn::DD_G; i++) {
