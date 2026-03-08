@@ -1,4 +1,5 @@
 #include "display.h"
+#include "timing.h"
 
 #include "Arduino.h"
 #include "Wire.h"
