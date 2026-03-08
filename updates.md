@@ -1,5 +1,13 @@
 # developer updates
 
+2026-03-08:
+
+IO device now starts on channel 8; press and turn dial to switch channel.
+
+This was the change that I was initially trying to make when I ran into problems with the Interface* code and decided it all had to go. Unsurprisingly, the way I ended up deciding to implement the selection would have worked fine with the old code. But that's fine, it was a mess I'd already decided I needed to fix.
+
+There's a distinct flicker on the client screen when it has a list of device channels but devices only on *some* of them. I'm gonna add an empty-channel backoff timeout and see if that clears it up.
+
 2026-03-02:
 
 Move updates to updates.md (make room for lab text).

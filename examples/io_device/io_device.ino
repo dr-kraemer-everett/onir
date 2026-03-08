@@ -14,7 +14,7 @@ Hardware hardware = {};
 
 IODevice* io;
 
-int channel;
+int channel = 8;
 
 void on_receive(int n_bytes) {
   int n = n_bytes;
@@ -29,11 +29,23 @@ void on_request() {
   Wire.write((byte*)&io->buffer.dial, sizeof(DialState));
 }
 
-void start_channel() {
-  Wire.end();  // idempotent
+void nothing() {}
+
+void start() {
   Wire.begin(channel);
   Wire.onReceive(on_receive);
   Wire.onRequest(on_request);
+}
+
+void restart(bool button = false) {
+  Wire.onReceive(nothing);
+  Wire.onRequest(nothing);
+  Wire.end();
+  blank(&io->buffer.display);
+  channel = Selector(button, hardware).get_channel();
+  Serial.print("selected: ");
+  Serial.println(channel);
+  start();
 }
 
 void setup() {
@@ -41,22 +53,16 @@ void setup() {
   log_winks = 10;  // I need a second.
   Serial.println("starting io device");
   uno_io(hardware);
-  Dial dial(hardware);
-  Display display(hardware);
-  display.set_point(-1);
-  channel = Selector(&dial, &display, false, hardware).get_channel();
-  Serial.print("selected: ");
-  Serial.println(channel);
 
   io = new IODevice(hardware);
-  start_channel();
+  start();
 }
 
 void loop() {
   io->update();
   log(io->buffer);
-  // if (io.reboot_channel > 0) {
-  //   channel = io.reboot_channel;
-  //   start_channel();
-  // }
+  if (io->new_channel) {
+    io->new_channel = false;
+    restart(true);
+  }
 }

@@ -21,7 +21,7 @@ class IODevice {
 public:
   IODevice(const Hardware& hardware = no_hardware);
 
-  int reboot_channel = -1;
+  bool new_channel = false;
 
   void update() {
     dial->read(buffer.dial);            // update dial buffer from hardware
@@ -29,9 +29,7 @@ public:
     display->refresh();                 // change the lights if it's time
 
     if (buffer.dial.button) {
-     Selector selector(hardware);
-     selector.set_button(buffer.dial.button);
-     reboot_channel = selector.get_channel();
+      new_channel = true;
     }
   }
 
