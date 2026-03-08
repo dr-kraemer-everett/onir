@@ -13,6 +13,12 @@ void Onir::display(char* message) {
   screen->display(message);
 }
 
+void blank(DisplayState* state) {
+  for (int i = 0; i < 4; i++) {
+    state->chars[i] = ' ';
+  }
+}
+
 void Onir::act() {
   if (go()) {
     screen->pan(1);

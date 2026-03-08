@@ -15,6 +15,7 @@ DisplayDevice::DisplayDevice(const Hardware& hardware) : hardware(hardware) {
   for (int i = (int)Function::DD_A; i <= (int)Function::DD_4; i++) {
     pinMode(dispatch(hardware, (Function)i), OUTPUT);
   }
+  blank(&state);
   clear();
 }
 

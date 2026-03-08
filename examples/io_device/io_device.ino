@@ -22,11 +22,11 @@ void on_receive(int n_bytes) {
     Serial.println("Format error!");
     n = (int)sizeof(DisplayState);
   }
-  Wire.readBytes((byte*)&io->state.display, n);
+  Wire.readBytes((byte*)&io->buffer.display, n);
 }
 
 void on_request() {
-  Wire.write((byte*)&io->state.dial, sizeof(DialState));
+  Wire.write((byte*)&io->buffer.dial, sizeof(DialState));
 }
 
 void start_channel() {
@@ -52,9 +52,10 @@ void setup() {
   start_channel();
 }
 
+
 void loop() {
   io->update();
-  log(io->state);
+  log(io->buffer);
   // if (io.reboot_channel > 0) {
   //   channel = io.reboot_channel;
   //   start_channel();

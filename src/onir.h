@@ -5,9 +5,11 @@
 #define MIN_CHANNEL 8
 
 struct DisplayState {
-  char chars[4];  // characters on display; ' ' is blank.
-  int point;      // using values outside [0,3] is pointless.
+  char chars[4];       // characters on display
+  int point = -1;      // values outside [0,3] are pointless.
 };
+
+void blank(DisplayState* state);
 
 struct ServoState {
   int servo_l = 1500;

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "onir.h"
 #include "display_device.h"
 #include "dial_device.h"
 #include "selector.h"
@@ -25,23 +24,21 @@ public:
   int reboot_channel = -1;
 
   void update() {
-    // Update dial state from hardware
-    dial->read(state.dial);
+    dial->read(buffer.dial);            // update dial buffer from hardware
+    display->state = buffer.display;    // push display buffer to hardware
+    display->refresh();                 // change the lights if it's time
 
-    // Push display state to hardware (scan / refresh)
-    display->state = state.display;
-    display->refresh();
-
-    if (state.dial.button) {
+    if (buffer.dial.button) {
      Selector selector(hardware);
-     selector.set_button(state.dial.button);
+     selector.set_button(buffer.dial.button);
      reboot_channel = selector.get_channel();
     }
   }
 
-  IOState state;   // shared storage (transport reads/writes this)
+  IOState buffer;
 
 private:
+
   DialDevice* dial;
   DisplayDevice* display;
 
