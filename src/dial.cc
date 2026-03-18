@@ -18,27 +18,27 @@ void Dial::attach(DialDevice* device) {
   device = device;
 }
 
-static int Dial::request(Order& order) {
-  if (order.channel < MIN_CHANNEL) return 0;
+static int Dial::call(Change& change) {
+  if (change.channel < MIN_CHANNEL) return 0;
   
-  Wire.requestFrom(order.channel, order.to_read);
+  Wire.requestFrom(change.channel, change.to_read);
   
-  if (Wire.available() == order.to_read) {
-    Wire.readBytes(order.buffer, order.to_read);
-    return order.to_read;
+  if (Wire.available() == change.to_read) {
+    Wire.readBytes(change.buffer, change.to_read);
+    return change.to_read;
   }
   return 0;
 }
 
-int Dial::request() {
-  return request(order);
+int Dial::call() {
+  return call(change);
 }
 
 void Dial::update() {
   if (device) {
     device->read(state);
   } else {
-    follow(rhythm, request, order);
+    follow(rhythm, call, change);
   }
 }
 

@@ -1,4 +1,4 @@
-struct Order {
+struct Change {
   int channel = -1;
   char* buffer = 0;
   int to_read = 0;
@@ -19,7 +19,7 @@ struct Rhythm {
   // policy
   int beats = 8;       // eight beats a measure
   int value = 10;      // hang in with the beat
-  int bars = 3;        // give them a few tries
+  int calls = 3;       // give them a few tries
   int layoff = 1000;   // hold up just a second
   
 };
@@ -44,40 +44,41 @@ static bool fresh(const Rhythm& rhythm) {
   return rhythm.last < 0;
 }
 
-static bool up(const Rhythm& rhythm) {
-  return rhythm.missed > rhythm.bars;
+static bool steady(const Rhythm& rhythm) {
+  return rhythm.missed <= rhythm.calls;
 }
 
-static bool cue(const Rhythm& rhythm) {
+static bool on_cue(const Rhythm& rhythm) {
   if (fresh(rhythm)) {
     return true;
-  } else if (up(rhythm)) {
+  } else if (steady(rhythm)) {
     return rhythm.now >= rhythm.last + rhythm.value;
   } 
   return rhythm.now >= rhythm.last + rhythm.layoff;
 }
 
 static bool go(const Rhythm& rhythm) {
-  return cue(rhythm) and on_beat(rhythm);
+  return on_cue(rhythm) and on_beat(rhythm);
 }
 
 void keep(Rhythm& rhythm);
 
-using Execute = int (*)(Order& order);
+using Call = int (*)(Change& change);
 
-static int follow(Rhythm& rhythm, Execute execute, Order& order) {
+static int follow(Rhythm& rhythm, Call call, Change& change)  {
   keep(rhythm);
   if (go(rhythm)) {
     rhythm.last = rhythm.now;
     
-    int result = execute(order);
-    if (result > 0) {
+    int response = call(change);
+    if (response > 0) {
       rhythm.missed = 0;
     } else {
       rhythm.missed++;
     }
     
-    return result;
+    return response;
   }
   return 0;
 }
+
