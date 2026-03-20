@@ -14,26 +14,31 @@ Dial::Dial(int channel) {
   set_channel(channel);
 }
 
-void Dial::attach(DialDevice* d) {
-  device = d;
+void Dial::attach(DialDevice* device) {
+  device = device;
+}
+
+static int Dial::call(Change& change) {
+  if (change.channel < MIN_CHANNEL) return 0;
+  
+  Wire.requestFrom(change.channel, change.to_read);
+  
+  if (Wire.available() == change.to_read) {
+    Wire.readBytes(change.buffer, change.to_read);
+    return change.to_read;
+  }
+  return 0;
+}
+
+int Dial::call() {
+  return call(change);
 }
 
 void Dial::update() {
   if (device) {
     device->read(state);
-    return;
-  }
-  if (channel_ >= MIN_CHANNEL) {
-    Wire.requestFrom(channel_, (int)sizeof(DialState));
-    if (Wire.available() == sizeof(DialState)) {
-      Wire.readBytes((char*)&state, sizeof(DialState));
-    }
-    return;
-  }
-
-  // Not configured: no device, no channel
-  if (millis() % 1000 == 0) {
-    Serial.println("Dial not configured.");
+  } else {
+    follow(rhythm, call, change);
   }
 }
 
