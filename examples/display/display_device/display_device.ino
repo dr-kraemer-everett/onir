@@ -1,5 +1,5 @@
-#include "display/display_device.h"
 #include "uno_io.h"
+#include "display/display_device.h"
 #include "hardware.h"
 
 #include "Wire.h"
@@ -8,7 +8,7 @@ DisplayDevice* display;
 Hardware hardware = { };
 
 void update_display(int message_size) {
-  Wire.readBytes((byte*)&display->state, message_size);
+  Wire.readBytes((byte*)&display->message, message_size);
 }
 
 void setup() {

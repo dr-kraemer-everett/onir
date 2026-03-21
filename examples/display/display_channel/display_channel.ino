@@ -1,8 +1,8 @@
+#include "uno_io.h"
 #include "display/display.h"
 #include "display/display_device.h"
 #include "dial/dial.h"
 #include "dial/dial_device.h"
-#include "uno_io.h"
 #include "selector.h"
 #include "onir.h"
 
@@ -39,7 +39,7 @@ void clear() {
 }
 
 void update_display(int message_size) {
-  Wire.readBytes((byte*)&(device->state), message_size);
+  Wire.readBytes((byte*)&(device->message), message_size);
   recieved = true;
 }
 
@@ -63,12 +63,8 @@ void setup() {
   Serial.begin(9600);
   Serial.println("starting character display.");
   uno_io(hardware);
-  device = new DisplayDevice(hardware);
-  Dial dial;
-  DialDevice dial_device(hardware);
-  dial.attach(&dial_device);
-  Display display;
-  display.attach(device);
+  Dial dial(hardware);
+  Display display(hardware);
   channel = Selector(&dial, &display).get_channel();
   Serial.print("selected: ");
   Serial.println(channel);
