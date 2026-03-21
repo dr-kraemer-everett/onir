@@ -1,5 +1,5 @@
-#include "display.h"
-#include "display_device.h"
+#include "display/display.h"
+#include "display/display_device.h"
 #include "uno_io.h"
 #include "hardware.h"
 

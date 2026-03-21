@@ -1,6 +1,7 @@
-#include "dial.h"
-#include "dial/dial_device.h"
 #include "uno_io.h"
+
+#include "dial/dial.h"
+#include "dial/dial_device.h"
 
 Dial* dial;
 int dial_value;

@@ -3,7 +3,7 @@
 #include "onir.h"
 
 #include "dial/dial.h"
-#include "display.h"
+#include "display/display.h"
 
 extern int selected_channel;
 const extern int min_channel;

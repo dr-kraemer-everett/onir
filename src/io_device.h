@@ -1,6 +1,6 @@
 #pragma once
 
-#include "display_device.h"
+#include "display/display_device.h"
 #include "dial/dial_device.h"
 #include "selector.h"
 

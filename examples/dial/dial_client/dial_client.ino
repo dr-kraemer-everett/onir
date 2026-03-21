@@ -1,7 +1,7 @@
 #include "Wire.h"
 
 #include "onir.h"
-#include "dial.h"
+#include "dial/dial.h"
 
 Dial* dial;
 
