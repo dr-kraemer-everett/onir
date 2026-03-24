@@ -13,10 +13,10 @@ int servo_pulse(s_small pitch);
 
 class Servo;
 
-static int execute(const Program& program, Robot robot) {
+template <typename T>
+static int execute(Robot<T>& robot, const Program& program) {
   return 0;
 }
-
 
 class MotorDevice {
 public:

@@ -37,7 +37,7 @@ void MotorDevice::set_pulse(Function function, int usec) {
 
 void MotorDevice::update() {
   // follow(rhythm, &move);
-  // follow(rhythm, execute, program, robot);
+  // follow(rhythm, robot, execute, program);
 }
 
 

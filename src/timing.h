@@ -1,5 +1,7 @@
 #pragma once
 
+#include "program.h"
+
 struct Change {
   int channel = -1;
   char* buffer = 0;
@@ -68,6 +70,9 @@ void keep(Rhythm& rhythm);
 using Move = int (*)();
 using Call = int (*)(Change& change);
 
+template <typename T>
+using Execute = int (*)(Robot<T>& robot, const Program& program);
+
 static int follow(Rhythm& rhythm, Call call, Change& change)  {
   keep(rhythm);
   if (go(rhythm)) {
@@ -91,6 +96,25 @@ static int follow(Rhythm& rhythm, Move move) {
     rhythm.last = rhythm.now;
 
     int result = move();
+    if (result) {
+      rhythm.missed = 0;
+    } else {
+      rhythm.missed++;
+    }
+
+    return result;
+  }
+
+  return 0;
+}
+
+template <typename T>
+static int follow(Rhythm& rhythm, Robot<T>& robot, Execute<T> execute, const Program& program) {
+  keep(rhythm);
+  if (go(rhythm)) {
+    rhythm.last = rhythm.now;
+
+    int result = execute(robot, program);
     if (result) {
       rhythm.missed = 0;
     } else {

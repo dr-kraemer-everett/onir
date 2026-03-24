@@ -55,7 +55,20 @@ enum class Function {
 class Servo;
 
 using Hardware = int[(int)Function::COUNT];
-using Robot = Servo*[(int)Function::COUNT];
+
+template <typename T>
+struct Robot {
+    T hardware[(int)Function::COUNT];
+
+    T& operator[](Function f) {
+        return hardware[(int)f];
+    }
+
+    const T& operator[](Function f) const {
+        return hardware[(int)f];
+    }
+};
+
 extern const Hardware no_hardware;
 extern const int hardware_size;
 
