@@ -13,18 +13,13 @@ int servo_pulse(s_small pitch);
 
 class Servo;
 
-template <typename T>
-static int execute(const Program& program, Resource<T>& resource) {
-  return 0;
-}
-
 class MotorDevice {
 public:
   MotorDevice(const Hardware& hardware = no_hardware);
 
   void engage(Function function);
   void release(Function function);
-  void set_pulse(Function function, int usec);
+  void set_pulse(Function function, int usec, long end_ms = 0);
 
   void update();
   void halt();
@@ -33,10 +28,15 @@ public:
 
 private:
 
+  Cue active = Cue::stop;
+
   Program program;
+
+  template <typename T>
+  static int execute(const Program& program, Resource<T>& resource);
+
   const Hardware& hardware;
   Resource<int> servo_pulses;
-  Resource<bool> engaged;
   Resource<long> end_millis;
 
   Resource<Servo*> robot;

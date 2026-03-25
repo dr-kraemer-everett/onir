@@ -10,12 +10,18 @@ struct Message {
 struct Motion {
   Function motor = Function::NONE;
   s_small pitch = 0;
-  u_small duration = 0;
+  u_small duration = 1000;  // try for a second
+
+  void clear() {
+    motor = Function::NONE;
+    pitch = 0;
+    duration = 0;
+  }
 };
 
 enum class Cue {
   stop,
-  
+
   go, // default action to modify
 
   // actions
@@ -31,6 +37,6 @@ enum class Cue {
   // follows
   drive,   // set pitch by dial
   scan,    // watch IR sensor
-  
+
   count,  // last item used for size
 };

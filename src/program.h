@@ -14,9 +14,10 @@ struct Reading {
 enum class Command {
   none, //
   perform,    // showtime
-  
-  create,     // add new cue (possibly based on existing cue)
+
   extend,     // add new motion to cue
+
+  create,     // add new cue (possibly based on existing cue)
   condition,  // place condition on cue
 };
 
@@ -35,24 +36,25 @@ struct Instruction {
 };
 
 // extends Instruction with multi-joint motions
-class Action {
+class Action : public Instruction {
 public:
   Action();
 
-  void clear();
+  void forget();
 
   bool add_motion(Motion motion) {
-    if (n_motions > ACTION_SIZE) return false;
+    if (motion.motor == Function::NONE) return false;
     for (int i = 0; i <= n_motions; i++) {
       if (motion.motor == motions[i].motor) {
         motions[i] = motion;
       }
+      return true;
     }
+    if (n_motions >= ACTION_SIZE) return false;
     motions[n_motions++] = motion;
     return true;
   }
 
-  Instruction instruction;
   Motion motions[ACTION_SIZE] = { };
 private:
   int n_motions = 0;
@@ -60,6 +62,9 @@ private:
 
 class Program {
 public:
+
+  Instruction instruction;  // client writes here by Wire.
+
   void clear(const Cue cue);
 
 private:

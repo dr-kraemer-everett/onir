@@ -7,11 +7,11 @@ using s_small = signed char;
 
 enum class Function {
   NONE,  // default
-  
+
   // power pair
   GROUND,
   VCC,
-  
+
   // dial
   CLOCK,
   DATA,
@@ -22,6 +22,7 @@ enum class Function {
   SWITCH_2,
 
   // motor names
+  MOTOR_MAIN,
   MOTOR_L_WHEEL,
   MOTOR_R_WHEEL,
   MOTOR_BASE,
@@ -29,6 +30,7 @@ enum class Function {
   MOTOR_ELBOW,
   MOTOR_WRIST,
   MOTOR_HAND,
+  MOTOR_END,
 
   // seven segment digit display outputs
 
@@ -49,26 +51,12 @@ enum class Function {
   DD_4,
 
   COUNT,  // last item used for size
-  
+
 };
 
 class Servo;
 
 using Hardware = int[(int)Function::COUNT];
-
-template <typename T>
-struct Resource {
-  T hardware[(int)Function::COUNT] { };
-
-    T& operator[](Function f) {
-        return hardware[(int)f];
-    }
-
-    const T& operator[](Function f) const {
-        return hardware[(int)f];
-    }
-};
-
 extern const Hardware no_hardware;
 extern const int hardware_size;
 
@@ -76,3 +64,16 @@ int assign(Hardware hardware, Function fn, int pin);
 int dispatch(const Hardware& hardware, Function fn);
 bool empty(const Hardware& hardware);
 void clear(Hardware hardware);
+
+template <typename T>
+struct Resource {
+  T hardware[(int)Function::COUNT] { };
+
+  T& operator[](Function f) {
+    return hardware[(int)f];
+  }
+
+  const T& operator[](Function f) const {
+    return hardware[(int)f];
+  }
+};

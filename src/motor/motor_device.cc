@@ -16,27 +16,54 @@ MotorDevice::MotorDevice(const Hardware& hardware) : hardware(hardware) {
 }
 
 void MotorDevice::engage(Function function) {
-  Servo* servo = new Servo;
-  servo->attach(dispatch(hardware, function));
-  robot[function] = servo;
+  if (not robot[function]) {
+    Servo* servo = new Servo;
+    servo->attach(dispatch(hardware, function));
+    robot[function] = servo;
+  }
   set_pulse(function, PULSE_NEUTRAL);
 }
 
 void MotorDevice::release(Function function) {
   Servo* servo = robot[function];
-  robot[function] = 0;
-  servo->detach();
-  delete servo;
+  if (servo) {
+    robot[function] = 0;
+    set_pulse(function, 0);
+    servo->detach();
+    delete servo;
+  }
 }
 
-void MotorDevice::set_pulse(Function function, int usec) {
+void MotorDevice::set_pulse(Function function, int usec, long end_ms) {
   if (robot[function]) {
+    servo_pulses[function] = usec;
     robot[function]->write(usec);
+    if (end_ms) {
+      end_millis[function] = end_ms;
+    }
+  }
+}
+
+template <typename T>
+static int MotorDevice::execute(const Program& program, Resource<T>& resource) {
+  switch (program.instruction.command) {
+  case Command::none:
+    return 0;
+  case Command::perform:
+    return 1;
+  case Command::extend:
+    return 0;
+  case Command::create:
+    return 0;
+  case Command::condition:
+    return 0;
+  default:
+    return 0;
   }
 }
 
 void MotorDevice::update() {
-  follow(rhythm, robot, execute, program);
+  follow(rhythm, execute, program, robot);
 }
 
 int MotorDevice::move() {

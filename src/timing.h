@@ -109,7 +109,7 @@ static int follow(Rhythm& rhythm, Move move) {
 }
 
 template <typename T>
-static int follow(Rhythm& rhythm, Resource<T>& resource, Execute<T> execute, const Program& program) {
+static int follow(Rhythm& rhythm, Execute<T> execute, const Program& program, Resource<T>& resource) {
   keep(rhythm);
   if (go(rhythm)) {
     rhythm.last = rhythm.now;
