@@ -10,6 +10,19 @@ const int PULSE_HALF_SPAN = 500;
 
 // converts motor pitch (signed 8 bit integer) into servo pulse in usec (16 bit)
 int servo_pulse(s_small pitch);
+long end_millis(long duration);
+
+struct ServoParams {
+  int pulse_usec = UNSET;
+  long end_millis = UNSET;
+
+  operator bool() const {
+    return pulse_usec != UNSET;
+  }
+
+};
+
+ServoParams perform(Motion motion);
 
 class Servo;
 
@@ -32,14 +45,12 @@ private:
 
   Program program;
 
-  template <typename T>
-  static int execute(const Program& program, Resource<T>& resource);
+  static int execute(Program& program, Resource<ServoParams>& settings);
 
   const Hardware& hardware;
-  Resource<int> servo_pulses;
-  Resource<long> end_millis;
+  Resource<ServoParams> settings = {};
 
-  Resource<Servo*> robot;
+  Resource<Servo*> robot = {};
 
-  Rhythm rhythm;
+  Resource<Rhythm> rhythms = {};
 };

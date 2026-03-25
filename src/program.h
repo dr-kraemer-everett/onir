@@ -31,8 +31,12 @@ struct Instruction {
   u_small priority = 0;  // unset; priority 1 == high priority
   Message message;
 
-  s_small channel = -1;
+  s_small channel = UNSET;
   Reading reading;
+
+  operator bool() const {
+    return command != Command::none;
+  }
 };
 
 // extends Instruction with multi-joint motions
@@ -67,13 +71,12 @@ public:
 
   void clear(const Cue cue);
 
-private:
   int n_actions = 0;
   Action actions[PROGRAM_SIZE] = { };
 };
 
 struct IOState {
-  s_small channel = -1;
+  s_small channel = UNSET;
   Message display;
   Reading dial;
   Action robot;

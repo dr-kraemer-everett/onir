@@ -3,7 +3,7 @@
 #include "program.h"
 
 struct Change {
-  int channel = -1;
+  int channel = UNSET ;
   char* buffer = 0;
   int to_read = 0;
   int to_write = 0;
@@ -11,21 +11,21 @@ struct Change {
 
 struct Rhythm {
   // present
-  long now = -1;
+  long now = UNSET;
 
   // past
-  long last = -1;
+  long last = UNSET;
   int missed = 0;
 
   // id
-  int group = -1;
-  
+  int group = UNSET;
+
   // policy
   int beats = 8;       // eight beats a measure
   int value = 10;      // hang in with the beat
   int calls = 3;       // give them a few tries
   int layoff = 1000;   // hold up just a second
-  
+
 };
 
 static int entrance(const Rhythm& rhythm) {
@@ -57,7 +57,7 @@ static bool on_cue(const Rhythm& rhythm) {
     return true;
   } else if (steady(rhythm)) {
     return rhythm.now >= rhythm.last + rhythm.value;
-  } 
+  }
   return rhythm.now >= rhythm.last + rhythm.layoff;
 }
 
@@ -71,20 +71,20 @@ using Move = int (*)();
 using Call = int (*)(Change& change);
 
 template <typename T>
-using Execute = int (*)(const Program& program, Resource<T>& resource);
+using Execute = int (*)(Program& program, Resource<T>& resource);
 
 static int follow(Rhythm& rhythm, Call call, Change& change)  {
   keep(rhythm);
   if (go(rhythm)) {
     rhythm.last = rhythm.now;
-    
+
     int response = call(change);
     if (response > 0) {
       rhythm.missed = 0;
     } else {
       rhythm.missed++;
     }
-    
+
     return response;
   }
   return 0;
@@ -109,7 +109,7 @@ static int follow(Rhythm& rhythm, Move move) {
 }
 
 template <typename T>
-static int follow(Rhythm& rhythm, Execute<T> execute, const Program& program, Resource<T>& resource) {
+static int follow(Rhythm& rhythm, Execute<T> execute, Program& program, Resource<T>& resource) {
   keep(rhythm);
   if (go(rhythm)) {
     rhythm.last = rhythm.now;
@@ -126,4 +126,3 @@ static int follow(Rhythm& rhythm, Execute<T> execute, const Program& program, Re
 
   return 0;
 }
-

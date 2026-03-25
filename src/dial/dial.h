@@ -11,7 +11,7 @@ public:
   Dial(int channel);
 
   void attach(DialDevice* device);
-  
+
   void set_channel(int channel) {
     change.channel = channel;
     rhythm.group = channel;
@@ -28,7 +28,7 @@ public:
   int value() const {
     return reading.count - zero_offset;
   }
-  
+
   int down_value() const {
     return reading.down_count - down_offset;
   }
@@ -49,11 +49,10 @@ public:
 private:
   int call();
   static int call(Change& change);
-  
-//  int channel_ = -1;  // -1 means unset
+
   int zero_offset = 0;
   int down_offset = 0;
-  
+
   bool press_ready = false;
   bool release_ready = false;
 

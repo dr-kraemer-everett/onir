@@ -20,9 +20,9 @@ public:
 
   void refresh();
   void clear();
-  
+
   Message message;
-  
+
 private:
 
   // Map positions to position/cathode pins.
@@ -47,7 +47,7 @@ private:
 
   /*
   segment names:
-  
+
       AAAAA
     FF     BB
     FF     BB
@@ -116,8 +116,8 @@ private:
 
   const int ms_per_digit = 1;
   const int ms_per_cycle = 4 * ms_per_digit;
-  int position = -1;
-  long refresh_ms = -1;
+  int position = UNSET;
+  long refresh_ms = UNSET;
 
   int position_to_show();
   void set_fn_pin(Function fn, bool val);
@@ -130,6 +130,3 @@ private:
 
   const Hardware& hardware;
 };
-
-
-

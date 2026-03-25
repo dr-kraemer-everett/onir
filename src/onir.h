@@ -26,6 +26,5 @@ private:
   void act();
   bool go();
   const int step_ms_ = 1000;
-  int now_ = -1;
+  int now_ = UNSET;
 };
-

@@ -1,3 +1,4 @@
+#include "Arduino.h"
 #include "Servo.h"
 
 #include "motor_device.h"
@@ -11,8 +12,24 @@ int servo_pulse(s_small pitch) {
   return PULSE_NEUTRAL + pitch * 4;  // (this is fine 4 now.)
 }
 
+long end_millis(long duration) {
+  if (duration == UNSET) return UNSET;
+  return millis() + duration;
+}
+
+ServoParams perform(Motion motion) {
+  ServoParams params;
+  params.pulse_usec = servo_pulse(motion.pitch);
+  params.end_millis = end_millis(motion.duration);
+  return params;
+}
+
 MotorDevice::MotorDevice(const Hardware& hardware) : hardware(hardware) {
-  rhythm.layoff = 100;  // quick as a wink
+  for (Function fn = Function::MOTOR_MAIN; fn < Function::MOTOR_END; fn++) {
+    Rhythm& rhythm = rhythms[fn];
+    rhythm.group = int(fn);
+    rhythm.layoff = 100;  // quick as a wink
+  }
 }
 
 void MotorDevice::engage(Function function) {
@@ -36,20 +53,23 @@ void MotorDevice::release(Function function) {
 
 void MotorDevice::set_pulse(Function function, int usec, long end_ms) {
   if (robot[function]) {
-    servo_pulses[function] = usec;
+    settings[function].pulse_usec = usec;
     robot[function]->write(usec);
     if (end_ms) {
-      end_millis[function] = end_ms;
+      settings[function].end_millis = end_ms;
     }
   }
 }
 
-template <typename T>
-static int MotorDevice::execute(const Program& program, Resource<T>& resource) {
+static int MotorDevice::execute(Program& program, Resource<ServoParams>& settings) {
   switch (program.instruction.command) {
   case Command::none:
     return 0;
   case Command::perform:
+    for (const Action& action : program.actions) {
+      if (action) {
+      }
+    }
     return 1;
   case Command::extend:
     return 0;
@@ -63,7 +83,7 @@ static int MotorDevice::execute(const Program& program, Resource<T>& resource) {
 }
 
 void MotorDevice::update() {
-  follow(rhythm, execute, program, robot);
+  //follow(rhythm, execute, program, settings);
 }
 
 int MotorDevice::move() {

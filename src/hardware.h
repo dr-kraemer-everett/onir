@@ -3,6 +3,8 @@
 using u_small = unsigned char;
 using s_small = signed char;
 
+#define UNSET -1
+
 // names for logical pin functions.
 
 enum class Function {
@@ -53,6 +55,13 @@ enum class Function {
   COUNT,  // last item used for size
 
 };
+
+
+inline Function& operator++(Function fn) {
+  Function ret = fn;
+  fn = (Function)((int)fn + 1);
+  return ret;
+}
 
 class Servo;
 

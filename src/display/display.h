@@ -14,7 +14,7 @@ class DisplayDevice;
 class Display {
 public:
   Display(const Hardware& hardware = no_hardware);
-  
+
   Display(int ch);
 
   void init(int channel);
@@ -22,7 +22,7 @@ public:
   void attach(DisplayDevice* d) {
     device = d;
   }
-  
+
   void set_value(int value) {
     set_digits(value);
   }
@@ -32,7 +32,7 @@ public:
   }
 
   void clear_point() {
-    message.point = -1;
+    message.point = UNSET;
   }
 
   void put(char ch, int place) {
@@ -44,7 +44,7 @@ public:
       put(str[i], i);
     }
   }
-  
+
   void clear() {
     for (int i = 0; i < 4; i++) {
       put(' ', i);
@@ -59,12 +59,12 @@ public:
 
 private:
   DisplayDevice* device = 0;
-  
-  int channel = -1;  // don't call if nothing will answer. (the modem rings SYN for a minute.)
+
+  int channel = UNSET;  // don't call if nothing will answer. (the modem rings SYN for a minute.)
 
   const int UPDATE_FREQ_HZ = 50;
   const int UPDATE_MILLIS = 1000 / UPDATE_FREQ_HZ;
-  long last_update = -1;
+  long last_update = UNSET;
 
   void set_digits(int nnn) {
     for (int i = 0; i < 4; i++) {
@@ -93,8 +93,7 @@ private:
     if (n == 0) return 0;
     return -n;
   }
-  
+
   void send_update();
   void update_local();
 };
-
