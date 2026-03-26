@@ -126,3 +126,6 @@ static int follow(Rhythm& rhythm, Execute<T> execute, Program& program, Resource
 
   return 0;
 }
+
+
+//static int advance(Rhythm& rhythm,

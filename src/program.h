@@ -13,12 +13,12 @@ struct Message {
 struct Motion {
   Function motor = Function::NONE;
   s_small pitch = 0;
-  u_small duration = 1000;  // try for a second
+  u_small winks = 10;  // try for a second
 
   void clear() {
     motor = Function::NONE;
     pitch = 0;
-    duration = 0;
+    winks = 0;
   }
 
   operator bool() const {
