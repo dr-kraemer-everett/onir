@@ -17,18 +17,17 @@ long end_millis(long duration) {
   return millis() + duration;
 }
 
-ServoParams perform(Motion motion) {
-  ServoParams params;
-  params.pulse_usec = servo_pulse(motion.pitch);
-  params.end_millis = end_millis(motion.duration);
-  return params;
+ServoControl control(Motion motion) {
+  ServoControl control;
+  control.pulse_usec = servo_pulse(motion.pitch);
+  control.end_millis = end_millis(motion.duration);
+  return control;
 }
 
 MotorDevice::MotorDevice(const Hardware& hardware) : hardware(hardware) {
   for (Function fn = Function::MOTOR_MAIN; fn < Function::MOTOR_END; fn++) {
-    Rhythm& rhythm = rhythms[fn];
-    rhythm.group = int(fn);
-    rhythm.layoff = 100;  // quick as a wink
+    rhythm[fn].group = int(fn);
+    rhythm[fn].layoff = 100;  // quick as a wink
   }
 }
 
@@ -36,54 +35,80 @@ void MotorDevice::engage(Function function) {
   if (not robot[function]) {
     Servo* servo = new Servo;
     servo->attach(dispatch(hardware, function));
-    robot[function] = servo;
+    robot[function].servo = servo;
+    rhythm[function].last = UNSET;
+    rhythm[function].missed = 0;
   }
-  set_pulse(function, PULSE_NEUTRAL);
 }
 
 void MotorDevice::release(Function function) {
-  Servo* servo = robot[function];
+  Servo* servo = robot[function].servo;
   if (servo) {
-    robot[function] = 0;
-    set_pulse(function, 0);
+    robot[function].servo = 0;
+    robot[function] = ServoControl();
     servo->detach();
     delete servo;
   }
 }
 
-void MotorDevice::set_pulse(Function function, int usec, long end_ms) {
-  if (robot[function]) {
-    settings[function].pulse_usec = usec;
-    robot[function]->write(usec);
-    if (end_ms) {
-      settings[function].end_millis = end_ms;
-    }
+void MotorDevice::assign(const Motion& motion) {
+  if (robot[motion.motor]) {
+    robot[motion.motor] = control(motion);
   }
 }
 
-static int MotorDevice::execute(Program& program, Resource<ServoParams>& settings) {
-  switch (program.instruction.command) {
-  case Command::none:
-    return 0;
-  case Command::perform:
+// void MotorDevice::set_pulse(Function function, int usec, long end_ms) {
+//   if (robot[function]) {
+//     robot[function].pulse_usec = usec;
+
+//     robot[function]->write(usec);
+//     if (end_ms) {
+//       robot[function].end_millis = end_ms;
+//     }
+//   }
+// }
+
+static Command MotorDevice::execute(Program& program, Resource<ServoControl>& robot) {
+  Instruction todo = program.instruction;
+  Command command = todo.command;
+  switch (command) {
+  case Command::none: { }
+  case Command::perform: {
     for (const Action& action : program.actions) {
-      if (action) {
+      if (action and action.cue == todo.cue) {
+        for (const Motion& motion: action.motions) {
+          //assign(motion);
+        }
       }
     }
-    return 1;
-  case Command::extend:
-    return 0;
-  case Command::create:
-    return 0;
-  case Command::condition:
-    return 0;
-  default:
-    return 0;
   }
+
+  case Command::extend: {
+    for (const Action& action : program.actions) {
+      if (action and action.cue == todo.cue) {
+        for (const Motion& motion: action.motions) {
+          if (motion.motor == todo.motion.motor) {
+            motion = todo.motion;
+            return Command::extend;
+          }
+          if (true) {} //xxxx
+      }
+    }
+  }
+
+  }
+  case Command::create: {
+  }
+  case Command::condition: {
+  }
+  }
+
+  program.instruction.command = Command::none;  // clear command
+  return command;
 }
 
 void MotorDevice::update() {
-  //follow(rhythm, execute, program, settings);
+  //follow(rhythm, execute, program, robot);
 }
 
 int MotorDevice::move() {

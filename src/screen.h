@@ -4,6 +4,17 @@
 #include "control.h"
 #include "log.h"
 
+/// xxxx remove
+/// xxxx remove
+/// xxxx remove
+
+#include "Arduino.h"
+
+/// xxxx remove
+/// xxxx remove
+/// xxxx remove
+
+
 const static int margin = 256;
 
 // Splits a string across a handful of displays and keeps them refreshed.
@@ -11,9 +22,14 @@ class Screen {
 
 public:
   Screen(const Hardware& hardware) : control_(new Control(hardware)) {
+    Serial.println("foo");
+    delay(1000);
+    Serial.println("foo");
+    delay(100);
+
     clear();
   }
-  
+
   Screen(Control* control) : control_(control) {
     clear();
   }
@@ -33,7 +49,7 @@ public:
   void fan_start(bool b) {
     fan_start_ = b;
   }
-  
+
   void erase() {
     for (int i = 0; i < margin; i++) {
       display_[i] = 0;
@@ -44,7 +60,7 @@ public:
     message_ = 0;
     index_ = 0;
   }
-  
+
   void display(const char* message) {
     message_ = message;
     record();
@@ -84,12 +100,12 @@ public:
       }
     }
   }
-  
+
 private:
   char char_at(int index) {
     return display_[mod(width(), index)];;
   }
-  
+
   void fan() {  // Sequence channel offsets from zero.
     index_ = 0;
     for (int channel = 0; channel < BANDS; channel++) {
@@ -118,7 +134,7 @@ private:
     }
     if (display_[length-1] != ' '  and length < margin - 2) {
       display_[length++] = ' ';                 // right-pad
-    }      
+    }
     display_[length] = 0;                       // terminate
     return length;
   }
@@ -134,7 +150,7 @@ private:
     while (str and str[length]) { length++; }
     return length;
   }
-  
+
   Control* const control_;
   const char* message_;
   char display_[margin];
@@ -142,5 +158,5 @@ private:
   int baselines_[BANDS];
   bool fan_start_ = true;
 
-  const Hardware& hardware;  
+  const Hardware& hardware;
 };

@@ -6,7 +6,6 @@
 
 #define DISPLAY_DEVICE_CHANNEL 9  // 8 & 9 are just for your stuff.
 #define MIN_CHANNEL 8             // (https://i2cdevices.org/addresses)
-#define DISPLAY_SHOW_ZERO true
 
 class DisplayDevice;
 
@@ -57,6 +56,10 @@ public:
 
   Message message;
 
+  void show_zero(bool show) {
+    shows_zero = show;
+  }
+
 private:
   DisplayDevice* device = 0;
 
@@ -65,12 +68,13 @@ private:
   const int UPDATE_FREQ_HZ = 50;
   const int UPDATE_MILLIS = 1000 / UPDATE_FREQ_HZ;
   long last_update = UNSET;
+  bool shows_zero = false;
 
   void set_digits(int nnn) {
     for (int i = 0; i < 4; i++) {
       put(0, i);  // 0 gives a blank display
     }
-    if ((nnn == 0) && !DISPLAY_SHOW_ZERO) return;
+    if ((nnn == 0) && !shows_zero) return;
     int sign = nnn ? nnn / absv(nnn) : 0;
     if (sign < 0) {
       put('-', 0);

@@ -24,6 +24,7 @@ void setup() {
   log_winks = 25;
   uno_io(hardware);
   onir = new Onir(channels, count, hardware);
+  Serial.println("bar");
   onir->display(message);
   Wire.begin();
 }

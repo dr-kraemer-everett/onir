@@ -1,9 +1,52 @@
 #pragma once
 
-#include "action.h"
+#include "hardware.h"
 
 #define PROGRAM_SIZE 128
 #define ACTION_SIZE 5  // Number of Motions allowed per Action
+
+struct Message {
+  char chars[4] = {0, 0, 0, 0} ;  // characters on display
+  s_small point = UNSET;             // values outside [0,3] are pointless.
+};
+
+struct Motion {
+  Function motor = Function::NONE;
+  s_small pitch = 0;
+  long duration = 1000;  // try for a second
+
+  void clear() {
+    motor = Function::NONE;
+    pitch = 0;
+    duration = 0;
+  }
+
+  operator bool() const {
+    return motor != Function::NONE;
+  }
+};
+
+enum class Cue {
+  stop,
+
+  go, // default action to modify
+
+  // actions
+  forward,
+  back,
+  spin_clockwise,
+  spin_counterwise,
+  go_right,
+  go_left,
+  back_right,
+  back_left,
+
+  // follows
+  drive,   // set pitch by dial
+  scan,    // watch IR sensor
+
+  count,  // last item used for size
+};
 
 struct Reading {
   int count = 0;
@@ -46,6 +89,7 @@ public:
 
   void forget();
 
+  // xxxx
   bool add_motion(Motion motion) {
     if (motion.motor == Function::NONE) return false;
     for (int i = 0; i <= n_motions; i++) {
@@ -57,7 +101,7 @@ public:
     if (n_motions >= ACTION_SIZE) return false;
     motions[n_motions++] = motion;
     return true;
-  }
+  }//xxxxx
 
   Motion motions[ACTION_SIZE] = { };
 private:

@@ -6,23 +6,25 @@
 #include "timing.h"
 
 const int PULSE_NEUTRAL = 1500;
-const int PULSE_HALF_SPAN = 500;
+// const int PULSE_HALF_SPAN = 500;
 
 // converts motor pitch (signed 8 bit integer) into servo pulse in usec (16 bit)
 int servo_pulse(s_small pitch);
+
 long end_millis(long duration);
 
-struct ServoParams {
+struct ServoControl {
   int pulse_usec = UNSET;
   long end_millis = UNSET;
+  Servo* servo = 0;
 
   operator bool() const {
-    return pulse_usec != UNSET;
+    return servo;
   }
 
 };
 
-ServoParams perform(Motion motion);
+ServoControl control(Motion motion);
 
 class Servo;
 
@@ -32,9 +34,10 @@ public:
 
   void engage(Function function);
   void release(Function function);
-  void set_pulse(Function function, int usec, long end_ms = 0);
+  void assign(const Motion& motion);
+  // void set_pulse(Function function, int usec, long end_ms = 0);
 
-  void update();
+  void update();  // call in loop()
   void halt();
 
   int move();
@@ -45,12 +48,9 @@ private:
 
   Program program;
 
-  static int execute(Program& program, Resource<ServoParams>& settings);
+  static Command execute(Program& program, Resource<ServoControl>& settings);
 
   const Hardware& hardware;
-  Resource<ServoParams> settings = {};
-
-  Resource<Servo*> robot = {};
-
-  Resource<Rhythm> rhythms = {};
+  Resource<ServoControl> robot = {};
+  Resource<Rhythm> rhythm = {};
 };

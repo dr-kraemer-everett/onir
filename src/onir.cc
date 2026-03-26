@@ -6,7 +6,10 @@
 
 Onir::Onir(int* channels, int count, const Hardware& hardware) : hardware(hardware) {
   control = new Control(channels, count, hardware);
+  Serial.println("frotz");
   screen = new Screen(control);
+  Serial.println("qux");
+  delay(100);
 }
 
 void Onir::display(char* message) {
