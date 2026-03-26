@@ -13,7 +13,7 @@ struct Message {
 struct Motion {
   Function motor = Function::NONE;
   s_small pitch = 0;
-  long duration = 1000;  // try for a second
+  u_small duration = 1000;  // try for a second
 
   void clear() {
     motor = Function::NONE;
