@@ -7,7 +7,7 @@ using s_small = signed char;
 
 // names for logical pin functions.
 
-enum class Function {
+enum class Function : u_small {
   NONE,  // default
 
   // power pair

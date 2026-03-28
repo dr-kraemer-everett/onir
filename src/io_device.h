@@ -24,16 +24,18 @@ public:
   bool new_channel = false;
 
   void update() {
-    dial->take(buffer.dial);            // update dial buffer from hardware
-    display->message = buffer.display;  // push display buffer to hardware
-    display->refresh();                 // change the lights if it's time
+    dial->take(buffer.reading);            // update dial buffer from hardware
+    display->message = buffer.message;     // push display buffer to hardware
+    display->refresh();                    // change the lights if it's time
 
-    if (buffer.dial.button) {
+    if (buffer.reading.button) {
       new_channel = true;
+      // TODO: delete stuff, fix leak here.
     }
   }
 
-  IOState buffer;
+  // TODO: use pointer to a shared logging buffer.
+  Instruction buffer;
 
 private:
 

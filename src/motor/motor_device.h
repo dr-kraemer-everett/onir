@@ -13,7 +13,7 @@ int servo_pulse(s_small pitch);
 
 long end_millis(long duration);
 
-enum class Target {
+enum class Target : u_small {
   position,
   rotation,
 };
@@ -25,8 +25,8 @@ struct Joint {
   u_small max_delta = 8;  // = beats * 1000 * delta usec / milli
   Target target = Target::position;
   Rhythm rhythm;
-  Servo* servo = 0;
 
+  Servo* servo = 0;
   operator bool() const {
     return servo;
   }

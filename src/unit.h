@@ -12,5 +12,5 @@ public:
   Dial dial;
   Display display;
 
-  IOState local_;  // for logging; use dial and display directly.
+  Instruction local_;  // for logging; use dial and display directly.
 };

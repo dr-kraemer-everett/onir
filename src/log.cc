@@ -9,7 +9,7 @@ int wink() { return millis() / 100; }  // a blink is 1/5 s. a wink is half a bli
 
 int log_winks = 10; // I need a second.
 
-void log(const IOState& s) {
+void log(const Instruction& s) {
   static long log_time_winks = -log_winks;  // persists across calls
   if (wink() - log_time_winks > log_winks) {
     log_time_winks = wink();
@@ -23,10 +23,10 @@ static char safe(char c) {
   return c;
 }
 
-static long checksum(const IOState& s) {
+static long checksum(const Instruction& s) {
   const byte* p = (const byte*)&s;
   long sum = 0;
-  for (int i = 0; i < (int)sizeof(IOState); ++i)
+  for (int i = 0; i < (int)sizeof(Instruction); ++i)
     sum += p[i];
   return sum;
 }
@@ -87,25 +87,25 @@ void log_id() {
   Serial.print(log_id_++);
 }
 
-void print_io(const IOState& state) {
+void print_io(const Instruction& state) {
   Serial.print(" {c: ");
   Serial.print(state.channel);
   Serial.print(", s: {m: ");
-  print_display(state.display);
+  print_display(state.message);
   Serial.print(", p: ");
-  Serial.print(state.display.point);
+  Serial.print(state.message.point);
   Serial.print("}, d: {v: ");
 
-  int v = state.dial.count;
+  int v = state.reading.count;
   left_pad(v);
   Serial.print(v);
   Serial.print("; d: ");
-  int d = state.dial.down_count;
+  int d = state.reading.down_count;
   left_pad(d);
   Serial.print(d);
 
   Serial.print("; b: ");
-  Serial.print(state.dial.button ? 1 : 0);
+  Serial.print(state.reading.button ? 1 : 0);
   Serial.print("}, #: ");
   Serial.print(checksum(state));
   Serial.print(" } (m: ");
@@ -116,8 +116,8 @@ void print_io(const IOState& state) {
 // local copy of dial and display contents (not definitive -- just read the dial!)
 void mirror_device_units(Unit* unit) {
   unit->local_.channel = unit->dial.channel();
-  memcpy(&unit->local_.dial,    &unit->dial.reading,    sizeof(unit->dial.reading));
-  memcpy(&unit->local_.display, &unit->display.message, sizeof(unit->display.message));
+  memcpy(&unit->local_.reading, &unit->dial.reading,    sizeof(unit->dial.reading));
+  memcpy(&unit->local_.message, &unit->display.message, sizeof(unit->display.message));
 }
 
 void log_io(Unit* unit) {

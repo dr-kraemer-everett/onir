@@ -11,14 +11,11 @@ public:
 
   void check();
   int count() {return count_;}
-  Unit* local() {return units[local_];}
+  Unit* local() {return units[local_device];}
 
   Unit* units[BANDS];
 
 private:
   int count_ = 0;
-  const int local_ = 0;
+  const int local_device = 0;
 };
-
-
-  

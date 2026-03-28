@@ -2,16 +2,26 @@
 
 #include "hardware.h"
 
-#define PROGRAM_SIZE 128
+#define PROGRAM_SIZE 16
 #define ACTION_SIZE 5  // Number of Motions allowed per Action
+
+struct Reading {
+  int count = 0;
+  int down_count = 0;
+  bool button = false;
+};
 
 struct Message {
   char chars[4] = {0, 0, 0, 0} ;  // characters on display
-  s_small point = UNSET;             // values outside [0,3] are pointless.
+  s_small point = UNSET;          // values outside [0,3] are pointless.
 };
 
 struct Motion {
   Function motor = Function::NONE;
+  operator bool() const {
+    return motor != Function::NONE;
+  }
+
   s_small pitch = 0;
   u_small winks = 10;  // try for a second
 
@@ -21,12 +31,9 @@ struct Motion {
     winks = 0;
   }
 
-  operator bool() const {
-    return motor != Function::NONE;
-  }
 };
 
-enum class Cue {
+enum class Cue : u_small {
   stop,
 
   go, // default action to modify
@@ -48,13 +55,7 @@ enum class Cue {
   count,  // last item used for size
 };
 
-struct Reading {
-  int count = 0;
-  int down_count = 0;
-  bool button = false;
-};
-
-enum class Command {
+enum class Command : u_small {
   none, //
   perform,    // showtime
 
@@ -65,16 +66,14 @@ enum class Command {
 };
 
 struct Instruction {
-  Command command = Command::none;
-  Cue cue = Cue::go;
-
-  Cue next = Cue::stop;
+  Command command = Command::none;  // modify robot program
+  Cue cue = Cue::go;                // engage robot program
+  s_small channel = UNSET;
 
   Motion motion;
-  u_small priority = 0;  // unset; priority 1 == high priority
-  Message message;
+  Cue next = Cue::stop;
 
-  s_small channel = UNSET;
+  Message message;
   Reading reading;
 
   operator bool() const {
@@ -117,11 +116,4 @@ public:
 
   int n_actions = 0;
   Action actions[PROGRAM_SIZE] = { };
-};
-
-struct IOState {
-  s_small channel = UNSET;
-  Message display;
-  Reading dial;
-  Action robot;
 };

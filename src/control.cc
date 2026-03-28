@@ -4,7 +4,7 @@
 
 Control::Control(const Hardware& hardware) {
   if (not empty(hardware)) {
-    units[local_] = new Unit(hardware);
+    units[local_device] = new Unit(hardware);
     return;
   }
   Serial.println("Control needs channels or hardware. (expect a crash.)");
@@ -22,7 +22,7 @@ Control::Control(int* channels, int ct, const Hardware& hardware) {
     units[channel] = new Unit(channel);
   }
   if (not empty(hardware)) {
-    units[local_] = new Unit(hardware);
+    units[local_device] = new Unit(hardware);
   }
 }
 

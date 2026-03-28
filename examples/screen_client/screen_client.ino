@@ -7,13 +7,15 @@
 
 #include "Wire.h"
 
-const int count = 2;
-int channels[count] = { 8, 9 };
+// const int count = 6;
+// int channels[count] = { 8, 9, 10, 11, 12, 13 };
+const int count = 4;
+int channels[count] = { 8, 9, 10, 11};
 
 Onir* onir;
 Hardware hardware = {};
 
-IOState state;
+Instruction state;
 const char message[64] = "ko labs -- onir --";
 //const char message[64] = "1 at a time";
 

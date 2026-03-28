@@ -15,22 +15,22 @@
 /// xxxx remove
 
 
-const static int margin = 256;
+const static int margin = 128;
 
 // Splits a string across a handful of displays and keeps them refreshed.
 class Screen {
 
 public:
   Screen(const Hardware& hardware) : control_(new Control(hardware)) {
+    clear();
+  }
+
+  Screen(Control* control) : control_(control) {
     Serial.println("foo");
     delay(1000);
     Serial.println("foo");
     delay(100);
 
-    clear();
-  }
-
-  Screen(Control* control) : control_(control) {
     clear();
   }
 

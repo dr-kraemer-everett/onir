@@ -1,6 +1,7 @@
 #pragma once
 
 #include "onir.h"
+#include "timing.h"
 
 // abstract interface for a seven-segment display
 
@@ -69,6 +70,9 @@ private:
   const int UPDATE_MILLIS = 1000 / UPDATE_FREQ_HZ;
   long last_update = UNSET;
   bool shows_zero = false;
+
+  Rhythm rhythm;
+  Change change;
 
   void set_digits(int nnn) {
     for (int i = 0; i < 4; i++) {

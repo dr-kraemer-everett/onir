@@ -1,9 +1,9 @@
 #include "onir.h"
 
 
-void log(const IOState& s);
+void log(const Instruction& s);
 
-void print_io(const IOState& s);
+void print_io(const Instruction& s);
 
 void print_display(const Message& display);
 
