@@ -20,14 +20,19 @@ void uno_io(Hardware hardware) {
 
   // dial encoder
 
-  assign(hardware, Fn::CLOCK, 17);   // A3
-  assign(hardware, Fn::DATA, 16);    // A2
-  assign(hardware, Fn::SWITCH, 15);  // A1
 }
 
 void uno_car(Hardware hardware) {
 
   assign(hardware, Fn::MOTOR_R_WHEEL, 13);
-  assign(hardware, Fn::MOTOR_R_WHEEL, 12);
+  assign(hardware, Fn::MOTOR_L_WHEEL, 12);
+
+  assign(hardware, Fn::CLOCK, 17);   // A3
+  assign(hardware, Fn::DATA, 16);    // A2
+  assign(hardware, Fn::SWITCH, 15);  // A1
+
+  assign(hardware, Fn::CLOCK_2, 3);
+  assign(hardware, Fn::DATA_2, 4);
+  assign(hardware, Fn::SWITCH_2, 5);
 
 }

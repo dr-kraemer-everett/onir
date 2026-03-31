@@ -12,15 +12,15 @@ DialDevice::DialDevice(const Hardware& hardware) : hardware(hardware) {
 }
 
 bool DialDevice::clock_pin() const {
-  return digitalRead(dispatch(hardware, Function::CLOCK));
+  return digitalRead(dispatch(hardware, clock_fn));
 }
 
 bool DialDevice::data_pin() const {
-  return digitalRead(dispatch(hardware, Function::DATA));
+  return digitalRead(dispatch(hardware, data_fn));
 }
 
 bool DialDevice::switch_pressed() const {
-  return not digitalRead(dispatch(hardware, Function::SWITCH));
+  return not digitalRead(dispatch(hardware, switch_fn));
 }
 
 void DialDevice::take(Reading& reading) {
@@ -45,4 +45,16 @@ void DialDevice::take(Reading& reading) {
   }
 
   reading.button = switch_pressed();
+}
+
+void DialDevice::set_clock(Function fn) {
+  clock_fn = fn;
+}
+
+void DialDevice::set_data(Function fn) {
+  data_fn = fn;
+}
+
+void DialDevice::set_switch(Function fn) {
+  switch_fn = fn;
 }

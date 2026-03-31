@@ -47,6 +47,7 @@ public:
   MotorDevice(const Hardware& hardware = no_hardware);
 
   Joint* engage(Function function, Target target, s_small pitch = 0);
+
   void release(Function function);
   void assign(Motion motion);
   // void set_pulse(Function function, int usec, long end_ms = 0);

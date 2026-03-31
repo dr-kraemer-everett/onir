@@ -63,3 +63,15 @@ bool Dial::release() {
   }
   return false;
 }
+
+void Dial::set_clock(Function fn) {
+  device->set_clock(fn);
+}
+
+void Dial::set_data(Function fn) {
+  device->set_data(fn);
+}
+
+void Dial::set_switch(Function fn) {
+  device->set_switch(fn);
+}

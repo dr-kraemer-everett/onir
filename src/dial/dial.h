@@ -46,6 +46,10 @@ public:
 
   Reading reading;
 
+  void set_clock(Function fn);
+  void set_data(Function fn);
+  void set_switch(Function fn);
+
 private:
   int call();
   static int call(Change& change);

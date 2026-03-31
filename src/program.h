@@ -9,6 +9,18 @@ struct Reading {
   int count = 0;
   int down_count = 0;
   bool button = false;
+
+  bool operator==(const Reading& other) const {
+    return (count == other.count and
+            down_count == other.down_count and
+            button == other.button);
+
+  };
+
+  bool operator!=(const Reading& other) const {
+    return not operator==(other);
+
+  };
 };
 
 struct Message {
