@@ -2,7 +2,7 @@
 
 #include "onir.h"
 #include "dial/dial_device.h"
-#include "uno_io.h"
+#include "circuits.h"
 
 DialDevice* dial;
 Reading reading;
