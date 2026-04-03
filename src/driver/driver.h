@@ -3,13 +3,13 @@
 #include "driver_device.h"
 
 #include "program.h"
-#include "motor/motor_device.h"
+#include "motor/machine.h"
 
 class Driver {
 
-  static Command execute(Program& program, MotorDevice& device);
+  static Command execute(Program& program, Machine& machine);
   Command update();
 
   Program program;
-  MotorDevice& device;
+  Machine& machine;
 };

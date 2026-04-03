@@ -4,24 +4,28 @@
 #include "dial/dial.h"
 #include "display/display.h"
 
-#include "motor_device.h"
+#include "machine.h"
 
 
 
 class Trimmer {
 public:
-  Trimmer(Dial* dial, MotorDevice* device, Function = Function::MOTOR_MAIN,
-          s_small pitch = 0, Display* display = 0, bool reversed = false);
+  Trimmer(Machine* , Reading* = 0, Dial* = 0,
+          Function = Function::MOTOR_MAIN, s_small pitch = 0,
+          Display* = 0, bool reversed = false);
 
   s_small pitch();
 
   void update();
 
 private:
-  Reading reading { };
 
+  Reading* reading;
+  Reading local;  // copy for detecting changes
   Dial* dial = 0;
-  MotorDevice* device = 0;
+  Display* display = 0;
+
+  Machine* machine = 0;
 
   Motion run { };
 

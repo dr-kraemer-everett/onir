@@ -1,6 +1,4 @@
 #pragma once
 
-#include "motor_device.h"
+#include "machine.h"
 #include "hardware.h"
-
-

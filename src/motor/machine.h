@@ -43,9 +43,9 @@ static bool hold(Joint* joint);
 
 class Servo;
 
-class MotorDevice {
+class Machine {
 public:
-  MotorDevice(const Hardware& hardware = no_hardware);
+  Machine(const Hardware& hardware = no_hardware);
 
   Joint* engage(Function function, Target target, s_small pitch = 0);
 

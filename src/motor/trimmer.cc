@@ -3,10 +3,14 @@
 #include "Arduino.h"
 
 
-Trimmer::Trimmer(Dial* dial, MotorDevice* device, Function fn,
-                 s_small pitch, Display* display, bool reversed) :
-  dial(dial), device(device), reversed(reversed) {
-  run.motor = fn;
+Trimmer::Trimmer(Machine* machine, Reading* reading, Dial* dial,
+                 Function motor, s_small pitch,
+                 Display* display, bool reversed) :
+  machine(machine), reversed(reversed), display(display) {
+  if (dial) {
+
+  }
+  run.motor = motor;
   run.pitch = pitch;
   run.winks = 0;  // no set end time
 }
@@ -20,7 +24,7 @@ void Trimmer::update() {
   dial->update();
   if (dial->press()) {
     run.pitch = 0;
-    device->assign(run);
+    machine->assign(run);
   } else {
     if (last < dial->reading) {
       (reversed) ? pitch_up() : pitch_down();
@@ -28,7 +32,7 @@ void Trimmer::update() {
       (reversed) ? pitch_down() : pitch_up();
     }
   }
-  device->update();
+  machine->update();
 }
 
 bool Trimmer::pitch_down() {
@@ -37,7 +41,7 @@ bool Trimmer::pitch_down() {
     return false;
   }
   run.pitch--;
-  device->assign(run);
+  machine->assign(run);
   return true;
 }
 
@@ -47,6 +51,6 @@ bool Trimmer::pitch_up() {
     return false;
   }
   run.pitch++;
-  device->assign(run);
+  machine->assign(run);
   return true;
 }

@@ -20,6 +20,10 @@ void uno_io(Hardware hardware) {
 
   // dial encoder
 
+  assign(hardware, Fn::CLOCK, 17);   // A3
+  assign(hardware, Fn::DATA, 16);    // A2
+  assign(hardware, Fn::SWITCH, 15);  // A1
+
 }
 
 void uno_car(Hardware hardware) {

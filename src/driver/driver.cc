@@ -1,7 +1,6 @@
 #include "driver.h"
-#include "motor/motor_device.h"
 
-static Command Driver::execute(Program& program, MotorDevice& device) {
+static Command Driver::execute(Program& program, Machine& machine) {
   Instruction& todo = program.instruction;
   Command& command = todo.command;
   switch (command) {
@@ -23,7 +22,7 @@ static Command Driver::execute(Program& program, MotorDevice& device) {
       if (not action) {
         action.cue = todo.cue;
         if (todo.motion) {
-          device.assign(todo.motion);
+          machine.assign(todo.motion);
         }
         return done(command);
       }
@@ -38,7 +37,7 @@ static Command Driver::execute(Program& program, MotorDevice& device) {
     for (const Action& action : program.actions) {
       if (action and action.cue == todo.cue) {
         for (const Motion& motion: action.motions) {
-          device.assign(motion);
+          machine.assign(motion);
           trigger = true;
         }
       }
@@ -73,6 +72,6 @@ static Command Driver::execute(Program& program, MotorDevice& device) {
 }
 
 Command Driver::update() {
-  return execute(program, device);
-  device.update();
+  return execute(program, machine);
+  machine.update();
 }

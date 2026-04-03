@@ -1,7 +1,7 @@
+#include "machine.h"
+
 #include "Arduino.h"
 #include "Servo.h"
-
-#include "motor_device.h"
 
 const int PULSE_NEUTRAL = 1500;
 
@@ -23,9 +23,9 @@ long end_millis(u_small winks) {
   return millis() + winks * millis_per_wink;
 }
 
-MotorDevice::MotorDevice(const Hardware& hardware) : hardware(hardware) { }
+Machine::Machine(const Hardware& hardware) : hardware(hardware) { }
 
-Joint* MotorDevice::engage(Function function, Target target, s_small pitch) {
+Joint* Machine::engage(Function function, Target target, s_small pitch) {
   if (not robot[function]) {
     Joint* joint = new Joint();
     joint->servo = new Servo;
@@ -45,7 +45,7 @@ Joint* MotorDevice::engage(Function function, Target target, s_small pitch) {
   }
 }
 
-void MotorDevice::release(Function function) {
+void Machine::release(Function function) {
   Joint* joint = robot[function];
   if (joint) {
     Servo* servo = robot[function]->servo;
@@ -65,14 +65,14 @@ static void control(Joint* joint, Motion motion) {
   joint->end_millis = end_millis(motion.winks);
 }
 
-void MotorDevice::assign(Motion motion) {
+void Machine::assign(Motion motion) {
   Joint* joint = robot[motion.motor];
   if (joint) {
     control(joint, motion);
   }
 }
 
-int MotorDevice::advance(Function function) {
+int Machine::advance(Function function) {
   Joint* joint = robot[function];
   if (not joint) return 0;
 
@@ -87,13 +87,13 @@ int MotorDevice::advance(Function function) {
   return delta;
 }
 
-void MotorDevice::update() {
+void Machine::update() {
   for (Function fn = Function::MOTOR_MAIN; fn < Function::MOTOR_END; fn++) {
     advance(fn);
   }
 }
 
-int MotorDevice::slam(Function function) {
+int Machine::slam(Function function) {
   Joint* joint = robot[function];
   if (not joint) return 0;
 
@@ -105,7 +105,7 @@ int MotorDevice::slam(Function function) {
   return delta;
 }
 
-void MotorDevice::halt() {
+void Machine::halt() {
   for (Function fn = Function::MOTOR_MAIN; fn < Function::MOTOR_END; fn++) {
     halt(fn);
   }
@@ -122,29 +122,20 @@ static bool stop_seek(Joint* joint) {
 }
 
 static bool stop_spin(Joint* joint) {
-  Serial.println("stop_spin");
   if (not joint) return false;
-  Serial.println("stop_spin2");
   if (joint->target != Target::rotation) return false;
-  Serial.println("stop_spin3");
   joint->target_usec = PULSE_NEUTRAL;  // try to spin down
-  Serial.println("stop_spin4");
   return true;
-  Serial.println("stop_spin");
 }
 
 static bool hold(Joint* joint) {
-  Serial.println("hold");
 
   if (not joint->servo) return false;
-  Serial.println("hold2");
   if (joint->target == Target::position) return stop_seek(joint);
-  Serial.println("hold3");
   if (joint->target == Target::rotation) return stop_spin(joint);
 }
 
-void MotorDevice::halt(Function fn) {
-  Serial.println("halt");
+void Machine::halt(Function fn) {
   Joint* joint = robot[fn];
   if (joint) {
     hold(joint);
