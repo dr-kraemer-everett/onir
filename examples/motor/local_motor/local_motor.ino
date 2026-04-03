@@ -3,8 +3,7 @@
 #include "program.h"
 #include "circuits.h"
 
-#include "motor/motor_device.h"
-#include "motor/trimmer.h"
+#include "driver/driver.h"
 #include "dial/dial.h"
 #include "display/display.h"
 
@@ -13,8 +12,6 @@ MotorDevice* motor;
 Dial* dial_l;
 Dial* dial_r;
 Display* display;
-Trimmer* trimmer_l;
-Trimmer* trimmer_r;
 Motion run;
 bool running = false;
 
@@ -31,12 +28,8 @@ void setup() {
   display = new Display(9);
   motor->engage(Function::MOTOR_L_WHEEL, Target::rotation);
   motor->engage(Function::MOTOR_R_WHEEL, Target::rotation);
-  trimmer_l = new Trimmer(dial_l, motor, Function::MOTOR_L_WHEEL, 0, display);
-  trimmer_r = new Trimmer(dial_r, motor, Function::MOTOR_R_WHEEL, 0, display, true);
   Wire.begin();  // client
 }
 
 void loop() {
-  trimmer_l->update();
-  trimmer_r->update();
 }

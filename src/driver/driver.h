@@ -6,5 +6,10 @@
 #include "motor/motor_device.h"
 
 class Driver {
+
   static Command execute(Program& program, MotorDevice& device);
+  Command update();
+
+  Program program;
+  MotorDevice& device;
 };

@@ -74,9 +74,6 @@ private:
   }
 
   Cue active = Cue::stop;
-  Program program;
-
-  static Command execute(Program& program, Resource<Joint>& settings);
 
   const Hardware& hardware;
   Resource<Joint*> robot = {};

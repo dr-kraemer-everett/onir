@@ -94,23 +94,26 @@ enum class Cue : u_small {
   count,  // last item used for size
 };
 
-static_assert(PROGRAM_SIZE > (int)Cue::count);
-
 enum class Command : u_small {
   none, //
-  perform,    // showtime
-
-  modify,     // add or modify motion for cue
-
   create,     // add new cue (possibly based on existing cue)
-  condition,  // place condition on cue
+  modify,     // add or modify motion for cue
+  perform,    // showtime
   forget,
+
+
+  condition,  // NOT IMPLEMENTED (place condition on cue)
 };
 
-static Command done(Command& command)  {
+static Command done(Command& command) {
   Command copy = command;
   command = Command::none;
   return copy;
+}
+
+static Command nope(Command& command) {
+  command = Command::none;
+  return command;
 }
 
 struct Instruction {

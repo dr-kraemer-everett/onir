@@ -6,7 +6,32 @@ static Command Driver::execute(Program& program, MotorDevice& device) {
   Command& command = todo.command;
   switch (command) {
 
-  case Command::none: { }
+  case Command::none: {
+    return done(command);
+  }
+
+  case Command::create: {
+    // see if cue already exists
+    for (const Action& action : program.actions) {
+      if (action.cue == todo.cue) {
+        return nope(command);
+      }
+    }
+    static_assert(PROGRAM_SIZE > (int)Cue::count);
+    // find a free spot
+    for (Action& action : program.actions) {
+      if (not action) {
+        action.cue = todo.cue;
+        if (todo.motion) {
+          device.assign(todo.motion);
+        }
+        return done(command);
+      }
+    }
+
+    // no room left
+    return nope(command);
+  }
 
   case Command::perform: {
     bool trigger = false;
@@ -18,7 +43,11 @@ static Command Driver::execute(Program& program, MotorDevice& device) {
         }
       }
     }
-    return (trigger) ? Command::perform : Command::none;
+    if (trigger) {
+      return done(command);
+    } else {
+      return nope(command);
+    }
   }
 
   case Command::modify: {
@@ -27,26 +56,23 @@ static Command Driver::execute(Program& program, MotorDevice& device) {
         for (const Motion& motion: action.motions) {
           if (motion.motor == todo.motion.motor) {
             motion = todo.motion;
-            return Command::modify;
+            return done(command);
           }
         }
       }
     }
-    return Command::none;
-
+    return nope(command);
   }
-  case Command::create: {
-    // see if it already exists
-    for (const Action& action : program.actions) {
-      if (action.cue == todo.cue) {
-        return Command::none;
-      }
-    }
 
-    // find a free spot (there
-  }
   case Command::condition: {
+    return nope(command);
   }
+
+  return nope(command);
   }
-  return done(command);
+}
+
+Command Driver::update() {
+  return execute(program, device);
+  device.update();
 }
