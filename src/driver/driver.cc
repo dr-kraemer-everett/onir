@@ -1,5 +1,9 @@
 #include "driver.h"
 
+Driver::Driver(Machine& machine) : machine(machine) {
+
+}
+
 static Command Driver::execute(Program& program, Machine& machine) {
   Instruction& todo = program.instruction;
   Command& command = todo.command;
@@ -16,14 +20,25 @@ static Command Driver::execute(Program& program, Machine& machine) {
         return nope(command);
       }
     }
+
     static_assert(PROGRAM_SIZE > (int)Cue::count);
     // find a free spot
     for (Action& action : program.actions) {
       if (not action) {
         action.cue = todo.cue;
-        if (todo.motion) {
-          machine.assign(todo.motion);
+        Motion& motion = todo.motion;
+        if (motion) {
+          action.motion = motion;
+          if (action.cue == Cue::drive) {
+            // if (not panel[action.cue]) {
+            //   panel[action.cue] = new Trimmer(&this, &action.reading, motion.motor);
+            // }
+          }
+
         }
+        action.direction = todo.direction;
+        action.message = todo.message;
+        action.reading = todo.reading;
         return done(command);
       }
     }

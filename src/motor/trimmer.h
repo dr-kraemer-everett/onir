@@ -10,26 +10,23 @@
 
 class Trimmer {
 public:
-  Trimmer(Machine* , Reading* = 0, Dial* = 0,
-          Function = Function::MOTOR_MAIN, s_small pitch = 0,
-          Display* = 0, bool reversed = false);
+  Trimmer(const Reading&, Motion* motion, bool invert = false);
 
   s_small pitch();
+
+  bool execute(Instruction& todo);
 
   void update();
 
 private:
 
-  Reading* reading;
-  Reading local;  // copy for detecting changes
-  Dial* dial = 0;
-  Display* display = 0;
+  const Reading& reading;
+  Reading prior;  // copy needed to spot changes
 
-  Machine* machine = 0;
+  Motion* motion;
 
-  Motion run { };
+  bool invert = false;
 
-  bool reversed = false;
   bool pitch_down();
   bool pitch_up();
 };

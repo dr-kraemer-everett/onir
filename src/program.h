@@ -119,7 +119,7 @@ static Command nope(Command& command) {
 struct Instruction {
   s_small channel = UNSET;
 
-  Command command = Command::none;  // modify motor cue
+  Command command = Command::none;  // instruction to driver
   operator bool() const {
     return command != Command::none;
   }
