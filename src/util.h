@@ -16,3 +16,14 @@ inline char hex_digit(int value) {
   if (value < 10) return '0' + value;
   return 'A' + value - 10;
 }
+
+template <typename T>
+int gamut() {
+  T stack_item;
+  T* heap_item = new T;
+
+  int diff = (char*)&stack_item - (char*)heap_item;
+
+  delete heap_item;
+  return diff;
+}

@@ -5,7 +5,6 @@ using s_small = signed char;
 
 #define UNSET -1
 
-
 const extern int min_channel;
 const extern int max_channel;
 
@@ -59,7 +58,6 @@ enum class Function : u_small {
   COUNT,  // last item used for size
 
 };
-
 
 inline Function& operator++(Function& fn) {
   Function ret = fn;

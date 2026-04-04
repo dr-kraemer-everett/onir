@@ -3,12 +3,12 @@
 #include "program.h"
 #include "circuits.h"
 
-#include "driver/driver.h"
+#include "motor/driver.h"
 #include "dial/dial.h"
 #include "display/display.h"
 
 Hardware hardware = {};
-MotorDevice* motor;
+Machine* motor;
 Dial* dial_l;
 Dial* dial_r;
 Display* display;
@@ -19,7 +19,7 @@ void setup() {
   Serial.begin(9600);
   Serial.println("begin");
   uno_car(hardware);
-  motor = new MotorDevice(hardware);
+  motor = new Machine(hardware);
   dial_l = new Dial(hardware);
   dial_r = new Dial(hardware);
   dial_r->set_clock(Function::CLOCK_2);

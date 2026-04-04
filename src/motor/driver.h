@@ -14,5 +14,4 @@ private:
 
   Program program;
   Machine& machine;
-  Resource<Trimmer*> panel { } ;
 };

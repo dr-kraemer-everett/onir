@@ -14,13 +14,13 @@ public:
 
   s_small pitch();
 
-  bool execute(Instruction& todo);
-
-  void update();
+  // checks and handles correctly-addressed instructions
+  Command execute(Instruction& todo);
 
 private:
 
   const Reading& reading;
+  void read();  // doesn't check anything, assumes good reading
   Reading prior;  // copy needed to spot changes
 
   Motion* motion;

@@ -11,7 +11,39 @@ s_small Trimmer::pitch() {
   return motion->pitch;
 }
 
-void Trimmer::update() {
+Command Trimmer::execute(Instruction& todo) {
+  if (not (todo.command == Command::perform or todo.command == Command::modify)) {
+    return Command::none;  // no action taken, instruction unmodified.
+  }
+
+  if (not (todo.cue == Cue::drive)) {
+    return Command::none;
+  }
+
+  if (not (todo.motion.motor == motion->motor)) {
+    return Command::none;
+  }
+  if (todo.command == Command::perform) {
+    read();
+
+    // fill in current pitch and timeout for client to read
+    todo.motion.pitch = motion->pitch;
+    todo.motion.winks = motion->winks;  // TODO fix this
+    done(todo.command);
+    return done(todo.command);
+  } else if (todo.command == Command::modify) {
+    if (todo.direction == Cue::invert) {
+      invert = true;
+      return done(todo.command);
+    } else if (todo.direction == Cue::revert) {
+      invert = false;
+      return done(todo.command);
+    }
+    return Command::none;
+  }
+}
+
+void Trimmer::read() {
   if (reading.button) {
     motion->pitch = 0;
   } else {
@@ -39,8 +71,4 @@ bool Trimmer::pitch_up() {
   }
   motion->pitch++;
   return true;
-}
-
-bool Trimmer::execute(Instruction& instruction) {
-  return false;
 }

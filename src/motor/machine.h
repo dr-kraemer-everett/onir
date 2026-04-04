@@ -1,8 +1,8 @@
 #pragma once
 
-#include "motor.h"
+//#include "motor.h"
 #include "hardware.h"
-#include "program.h"
+//#include "data.h"
 #include "timing.h"
 
 const extern int PULSE_NEUTRAL;

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "data.h"
 #include "program.h"
 
 struct Change {
