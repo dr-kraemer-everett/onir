@@ -29,15 +29,14 @@ Command Trimmer::execute(Instruction& todo) {
     // fill in current pitch and timeout for client to read
     todo.motion.pitch = motion->pitch;
     todo.motion.winks = motion->winks;  // TODO fix this
-    done(todo.command);
-    return done(todo.command);
+    return done(todo);
   } else if (todo.command == Command::modify) {
     if (todo.direction == Cue::invert) {
       invert = true;
-      return done(todo.command);
+      return done(todo);
     } else if (todo.direction == Cue::revert) {
       invert = false;
-      return done(todo.command);
+      return done(todo);
     }
     return Command::none;
   }

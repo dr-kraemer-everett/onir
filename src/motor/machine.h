@@ -1,7 +1,7 @@
 #pragma once
 
 #include "timing.h"
-#include "trimmer.h"
+#include "program.h"
 
 const extern int PULSE_NEUTRAL;
 const extern int PULSE_MAX;
@@ -17,6 +17,8 @@ enum class Target : u_small {
   rotation,
   torque
 };
+
+class Trimmer;
 
 struct Joint {
   int pulse_usec = UNSET;
@@ -46,16 +48,15 @@ class Machine {
 public:
   Machine(const Hardware& hardware = no_hardware);
 
-  Joint* operator[](Function fn) {
-    Joint* joint = joints[fn];
-    if (not joint) return 0;
-    return joint;
+  Joint*& operator[](Function fn) {
+    return joints[fn];
   }
 
   Joint* engage(Function joint, Target target, s_small pitch = 0);
 
   void release(Function joint);
-  void assign(Motion motion);
+  Function assign(Action action);
+  Command assign(Motion motion);
 
   void update();  // call in loop()
   void halt(Function joint);

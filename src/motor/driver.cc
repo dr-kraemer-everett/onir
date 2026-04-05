@@ -2,89 +2,72 @@
 
 Driver::Driver(Machine& machine) : machine(machine) {
 
+  // set up stop, go, drive actions
+
+// set up trimmers
 }
 
 static Command Driver::execute(Program& program, Machine& machine) {
   Instruction& todo = program.instruction;
+  if (not todo) {
+    return done(todo);
+  }
   Command& command = todo.command;
-  switch (command) {
+  Cue cue = todo.cue;
+  const Motion& motion = todo.motion;
 
-  case Command::none: {
-    return done(command);
-  }
-
-  case Command::create: {
-    // see if cue already exists
-    for (const Action& action : program.actions) {
-      if (action.cue == todo.cue) {
-        return nope(command);
+  if (command == Command::perform) {
+    if (cue == Cue::none) {
+      if (motion) {
+        return apply(machine.assign(motion), todo);
+      } else { // need cue or motion to perform
+        return reject(todo);
       }
     }
+    Action* action_ = program[cue];
+    if (not action_) {
+      return ignore(todo);
+    }
+    Action& action = *action_;
+    Function response = machine.assign(action);
+    if (response == Function::NONE) {
+      return ignore(todo);
+    }
+    Motion& motion = *action[response];
+    todo.motion = motion;
+    todo.direction = action.direction;
+    return done(todo);
+  }
 
-    static_assert(PROGRAM_SIZE > (int)Cue::count);
-    // find a free spot
-    for (Action& action : program.actions) {
-      if (not action) {
-        action.cue = todo.cue;
-        Motion& motion = todo.motion;
-        if (motion) {
-          action.motion = motion;
-          if (action.cue == Cue::drive) {
-//            if (not panel[action.cue]) {
-            //   panel[action.cue] = new Trimmer(&this, &action.reading, motion.motor);
-            // }
-          }
-
-        }
-        action.direction = todo.direction;
-        action.message = todo.message;
-        action.reading = todo.reading;
-        return done(command);
+  if (command == Command::modify) {
+  // see if cue exists
+    Action*& action = program[cue];
+    if (not action) {
+      action = new Action(todo);
+    }
+    Motion& motion = action->motion;
+    if (motion) {
+      action->motion = motion;
+      if (action->cue == Cue::drive) {
+        //            if (not panel[action->cue]) {
+        //   panel[action->cue] = new Trimmer(&this, &action->reading, motion.motor);
+        // }
       }
+
     }
-
-    // no room left
-    return nope(command);
+    action->direction = todo.direction;
+    action->message = todo.message;
+    action->reading = todo.reading;
+    return done(todo);
   }
 
-  case Command::perform: {
-    bool trigger = false;
-    for (const Action& action : program.actions) {
-      if (action and action.cue == todo.cue) {
-        for (const Motion& motion: action.motions) {
-          machine.assign(motion);
-          trigger = true;
-        }
-      }
-    }
-    if (trigger) {
-      return done(command);
-    } else {
-      return nope(command);
-    }
+  if (command == Command::condition) {
+    return reject(todo);
   }
 
-  case Command::modify: {
-    for (const Action& action : program.actions) {
-      if (action and action.cue == todo.cue) {
-        for (const Motion& motion: action.motions) {
-          if (motion.motor == todo.motion.motor) {
-            motion = todo.motion;
-            return done(command);
-          }
-        }
-      }
-    }
-    return nope(command);
-  }
-
-  case Command::condition: {
-    return nope(command);
-  }
-
-  return nope(command);
-  }
+  return ignore(todo);
 }
+
 
 Command Driver::update() {
   return execute(program, machine);

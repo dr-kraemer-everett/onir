@@ -94,3 +94,54 @@ enum class Cue : u_small {
 
   count,  // last item used for size
 };
+
+enum class Command : u_small {
+  none, //
+  perform,    // showtime
+  ignore,     // driver indicates bad instruction
+
+  modify,     // add or modify motion for cue
+  copy,       // duplicate cue (uses .direction)
+  forget,     // delete object
+
+  condition,  // NOT IMPLEMENTED (place condition on cue)
+
+};
+
+struct Instruction {
+  s_small channel = UNSET;
+
+  Command command = Command::none;    // boss to driver
+  Command respond = Command::none;    // driver to boss
+  operator bool() const {
+    return command != Command::none and respond != Command::ignore;
+  }
+
+  Cue cue = Cue::go;                // engage motor cue
+  Motion motion;
+  Cue direction = Cue::stop;        // next action / command argument
+
+  Message message;                  // displays
+  Reading reading;                  // sensors
+
+};
+
+static Command apply(Command respond, Instruction& todo) {
+  todo.respond = respond;
+  return respond;
+}
+
+static Command done(Instruction& todo) {
+  Command command = todo.command;
+  todo.command = Command::none;
+  return apply(command, todo);
+}
+
+static Command ignore(Instruction& todo) {
+  return apply(Command::ignore, todo);
+}
+
+static Command reject(Instruction& todo) {
+  todo.command = Command::none;
+  return ignore(todo);
+}

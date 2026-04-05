@@ -66,11 +66,24 @@ static void control(Joint* joint, Motion motion) {
   joint->end_millis = end_millis(motion.winks);
 }
 
-void Machine::assign(Motion motion) {
-  Joint* joint = joints[motion.motor];
-  if (joint) {
-    control(joint, motion);
+Function Machine::assign(Action action) {
+  Function response;
+  for (Motion* motion : action.motions) {
+    if (motion) {
+      Function motor = motion->motor;
+      Joint* joint = joints[motor];
+      if (joint) {
+        response = motor;  // returns last activated
+        control(joint, *motion);
+      }
+    }
   }
+  return response;
+}
+
+Command Machine::assign(Motion motion) {
+//  if (joi  TPPDPD TODO
+  return Command::none;
 }
 
 int Machine::advance(Function function) {
