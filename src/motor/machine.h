@@ -34,6 +34,9 @@ struct Joint {
   }
 
   Trimmer* trimmer = 0;
+  bool ready() {
+    return trimmer;
+  }
 };
 
 static bool control(Joint* joint, Motion motion);

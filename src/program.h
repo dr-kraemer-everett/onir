@@ -30,7 +30,6 @@ public:
   Action* actions[(int)Cue::count] = { };
 };
 
-
 template <typename T>
 using Execute = int (*)(Program& program, Resource<T>& resource);
 
