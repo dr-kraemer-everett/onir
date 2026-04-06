@@ -36,7 +36,7 @@ struct Joint {
   Trimmer* trimmer = 0;
 };
 
-static void control(Joint* joint, Motion motion);
+static bool control(Joint* joint, Motion motion);
 
 static bool stop_seek(Joint* joint);
 static bool stop_spin(Joint* joint);
@@ -55,8 +55,9 @@ public:
   Joint* engage(Function joint, Target target, s_small pitch = 0);
 
   void release(Function joint);
-  Function assign(Action action);
-  Command assign(Motion motion);
+  Function assign(const Action& action);
+  bool assign(const Motion* motion);
+  bool assign(const Motion& motion);
 
   void update();  // call in loop()
   void halt(Function joint);

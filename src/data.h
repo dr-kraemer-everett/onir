@@ -117,13 +117,15 @@ struct Instruction {
     return command != Command::none and respond != Command::ignore;
   }
 
-  Cue cue = Cue::go;                // engage motor cue
+  Cue cue = Cue::go;          // engage motor cue
   Motion motion;
-  Cue direction = Cue::stop;        // next action / command argument
 
-  Message message;                  // displays
-  Reading reading;                  // sensors
+  Message message;            // displays
+  Reading reading;            // sensors
 
+  //
+  Instruction* next = 0;      // next intruction; if none, try direction
+  Cue direction = Cue::stop;  // next action / command argument
 };
 
 static Command apply(Command respond, Instruction& todo) {

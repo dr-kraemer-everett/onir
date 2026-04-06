@@ -12,8 +12,8 @@ void setup() {
   uno_car(hardware);
   machine = new Machine(hardware);
   driver = new Driver(*machine);
-  Serial.print("gaumut: ");
-  Serial.println(gamut<Action>());
+  Serial.print("gamut: ");
+  Serial.println(gamut<Instruction>());
 }
 
 void loop() {

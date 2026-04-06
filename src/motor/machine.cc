@@ -3,6 +3,8 @@
 #include "Arduino.h"
 #include "Servo.h"
 
+#define LOG_SERVO_CHANGE true
+
 const int PULSE_NEUTRAL = 1500;
 
 // TODO: add custom per-servo trim (data file?)
@@ -57,33 +59,34 @@ void Machine::release(Function function) {
   }
 }
 
-static void control(Joint* joint, Motion motion) {
-  if (not joint) return;
+static bool control(Joint* joint, Motion motion) {
+  if (not joint) return false;
 
   joint->target_usec = servo_pulse(motion.pitch);
-  Serial.print("joint->target_usec: ");
-  Serial.println(joint->target_usec);
+  if (LOG_SERVO_CHANGE) {
+    Serial.print("joint->target_usec: ");
+    Serial.println(joint->target_usec);
+  }
   joint->end_millis = end_millis(motion.winks);
+  return true;
 }
 
-Function Machine::assign(Action action) {
-  Function response;
-  for (Motion* motion : action.motions) {
-    if (motion) {
-      Function motor = motion->motor;
-      Joint* joint = joints[motor];
-      if (joint) {
-        response = motor;  // returns last activated
-        control(joint, *motion);
-      }
+Function Machine::assign(const Action& action) {
+  Function response {};
+  for (const Motion* motion : action.motions) {
+    if (assign(motion)) {
+      response = motion->motor;  // returns last activated
     }
   }
   return response;
 }
 
-Command Machine::assign(Motion motion) {
-//  if (joi  TPPDPD TODO
-  return Command::none;
+bool Machine::assign(const Motion* motion) {
+  return motion ? assign(*motion) : false;
+}
+
+bool Machine::assign(const Motion& motion) {
+  return control(joints[motion.motor], motion);
 }
 
 int Machine::advance(Function function) {
@@ -94,9 +97,6 @@ int Machine::advance(Function function) {
   if (not delta) return 0;
 
   joint->pulse_usec += delta;
-  // Serial.print(millis());
-  // Serial.print(":");
-  // Serial.println(joint->pulse_usec);
   joint->servo->write(joint->pulse_usec);
   return delta;
 }

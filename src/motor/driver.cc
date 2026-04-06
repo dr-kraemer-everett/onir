@@ -18,11 +18,8 @@ static Command Driver::execute(Program& program, Machine& machine) {
 
   if (command == Command::perform) {
     if (cue == Cue::none) {
-      if (motion) {
-        return apply(machine.assign(motion), todo);
-      } else { // need cue or motion to perform
-        return reject(todo);
-      }
+      if (not motion) return reject(todo);  // need cue or motion to perform
+      return machine.assign(motion) ? done(todo) : ignore(todo);
     }
     Action* action_ = program[cue];
     if (not action_) {
