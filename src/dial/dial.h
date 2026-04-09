@@ -21,7 +21,7 @@ public:
     return change.channel;
   }
 
-  void update();
+  Reading& update();
   bool press();
   bool release();
 
@@ -52,6 +52,7 @@ public:
   void set_clock(Function fn);
   void set_data(Function fn);
   void set_switch(Function fn);
+  void set_dial_2();
 
 private:
   int call();

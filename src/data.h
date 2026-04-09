@@ -92,8 +92,15 @@ enum class Cue : u_small {
   invert,  // flip dial meaning
   revert,  // normal reading
 
-  count,  // last item used for size
+  query,   // ask about motor motion
+
+  count,   // last item used for size
 };
+
+inline bool is_motor(Cue cue) {
+  int i = (int)cue;
+  return (i >= (int)Cue::stop and i <=(int)Cue::scan);
+}
 
 enum class Command : u_small {
   none, //
@@ -107,6 +114,12 @@ enum class Command : u_small {
   condition,  // NOT IMPLEMENTED (place condition on cue)
 
 };
+
+static bool accept(const Command& command) {
+  if (command == Command::none) return false;
+  if (command == Command::ignore) return false;
+  return true;
+}
 
 struct Instruction {
   s_small channel = UNSET;
@@ -123,27 +136,66 @@ struct Instruction {
   Message message;            // displays
   Reading reading;            // sensors
 
-  //
   Instruction* next = 0;      // next intruction; if none, try direction
-  Cue direction = Cue::stop;  // next action / command argument
+  Cue direction = Cue::none;
+
+  void clear() {
+    Instruction blank;
+    *this = blank;
+  }
 };
 
-static Command apply(Command respond, Instruction& todo) {
-  todo.respond = respond;
-  return respond;
+static Command pass(Instruction& todo, Command response) {
+  return response;
 }
 
-static Command done(Instruction& todo) {
+static Command pass(Instruction& todo) {
+  return pass(todo, Command::none);
+}
+
+static Command mark(Instruction& todo, Command response) {
+  todo.respond = response;
+  pass(todo, response);
+}
+
+static Command apply(Command response, Instruction& todo) {
+  todo.respond = response;
+  pass(todo, response);
+}
+
+static Command sign(Instruction& todo) {
   Command command = todo.command;
   todo.command = Command::none;
-  return apply(command, todo);
+  return mark(todo, command);
 }
 
-static Command ignore(Instruction& todo) {
-  return apply(Command::ignore, todo);
+static bool done(Instruction& todo) {
+  return todo.respond == Command::none and accept(todo.respond);
 }
 
-static Command reject(Instruction& todo) {
+static bool modified(Instruction& todo) {
+  return todo.command != Command::none and todo.respond != Command::none;
+}
+
+static Command fail(Instruction& todo) {
+  Command command = todo.command;
   todo.command = Command::none;
-  return ignore(todo);
+  return mark(todo, Command::ignore);
+}
+
+static bool failed(Instruction& todo) {
+  return todo.respond == Command::ignore;
+}
+
+static Command block(Instruction& todo) {
+  todo.command = Command::ignore;
+  return fail(todo);
+}
+
+static bool blocked(Instruction& todo) {
+  return todo.command == Command::ignore;
+}
+
+static bool modified(Instruction& todo, Command response) {
+  return response == Command::modify or todo.respond == Command::modify;
 }

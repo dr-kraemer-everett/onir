@@ -13,9 +13,9 @@ static int servo_pulse(s_small pitch);
 long end_millis(long duration);
 
 enum class Target : u_small {
-  position,
-  rotation,
-  torque
+			     position,
+			     rotation,
+			     torque
 };
 
 class Trimmer;
@@ -32,14 +32,13 @@ struct Joint {
   operator bool() const {
     return servo;
   }
+  bool write();
 
   Trimmer* trimmer = 0;
-  bool ready() {
-    return trimmer;
-  }
+  Command drive(Instruction&);
 };
 
-static bool control(Joint* joint, Motion motion);
+static Command control(Joint* joint, Motion motion);
 
 static bool stop_seek(Joint* joint);
 static bool stop_spin(Joint* joint);
@@ -55,12 +54,13 @@ public:
     return joints[fn];
   }
 
-  Joint* engage(Function joint, Target target, s_small pitch = 0);
+  Joint* engage(Function joint, Target, s_small pitch = 0);
+  void engage_hardware(Target);
 
   void release(Function joint);
-  Function assign(const Action& action);
-  bool assign(const Motion* motion);
-  bool assign(const Motion& motion);
+  Function assign(const Action&);
+  Command assign(const Motion*);
+  Command assign(const Motion&);
 
   void update();  // call in loop()
   void halt(Function joint);
@@ -73,6 +73,8 @@ public:
 
 private:
 
+  static void answer(Function* answer, Function query, Function update);
+
   static int pulse_delta(const Joint& joint) {
     int target_delta = joint.target_usec - joint.pulse_usec;
     if (not target_delta) return 0;
@@ -80,7 +82,7 @@ private:
 
     if (sign * target_delta <= joint.max_delta) {
       return target_delta;
-    } else {
+      } else {
       return sign * joint.max_delta;
     }
   }

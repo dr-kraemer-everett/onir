@@ -1,4 +1,5 @@
 #include "machine.h"
+#include "trimmer.h"
 
 #include "Arduino.h"
 #include "Servo.h"
@@ -25,25 +26,44 @@ long end_millis(u_small winks) {
   return millis() + winks * millis_per_wink;
 }
 
+
+bool Joint::write() {
+  if (not servo) return false;
+  servo->write(pulse_usec);
+  return true;
+}
+
+Command Joint::drive(Instruction& todo) {
+  return trimmer->execute(todo);
+}
+
 Machine::Machine(const Hardware& hardware) : hardware(hardware) { }
 
 Joint* Machine::engage(Function function, Target target, s_small pitch) {
-  if (not joints[function]) {
-    Joint* joint = new Joint();
-    joint->servo = new Servo;
-    joint->target = target;
-    joint->servo->attach(dispatch(hardware, function));
+  Joint* joint = joints[function];
+  if (joint) return joint;
+  if (not is_motor(function)) return 0;
+  joint = new Joint();
+  joint->servo = new Servo;
+  joint->target = target;
+  joint->servo->attach(dispatch(hardware, function));
 
-    joint->pulse_usec = servo_pulse(pitch);
-    joint->target_usec = servo_pulse(pitch);
-    joint->servo->write(joint->pulse_usec);
-    joint->rhythm.group = int(function);
-    joint->rhythm.layoff = 100;  // quick as a wink
+  joint->pulse_usec = servo_pulse(pitch);
+  joint->target_usec = servo_pulse(pitch);
+  joint->rhythm.group = int(function);
+  joint->rhythm.layoff = 100;  // quick as a wink
 
-    joint->max_delta = 3;
+  joint->max_delta = 3;
 
-    joints[function] = joint;
+  joints[function] = joint;
+  joint->write();
+}
 
+void Machine::engage_hardware(Target target) {
+  for (Function motor = Function::MOTOR_MAIN; motor < Function::MOTOR_END; motor++) {
+    if (dispatch(hardware, motor) != UNSET) {
+      engage(motor, target, 0);
+    }
   }
 }
 
@@ -59,8 +79,8 @@ void Machine::release(Function function) {
   }
 }
 
-static bool control(Joint* joint, Motion motion) {
-  if (not joint) return false;
+static Command control(Joint* joint, Motion motion) {
+  if (not joint) return Command::ignore;
 
   joint->target_usec = servo_pulse(motion.pitch);
   if (LOG_SERVO_CHANGE) {
@@ -68,24 +88,31 @@ static bool control(Joint* joint, Motion motion) {
     Serial.println(joint->target_usec);
   }
   joint->end_millis = end_millis(motion.winks);
-  return true;
+  return Command::modify;
+}
+
+static void Machine::answer(Function* answer, Function query, Function update) {
+  if (*answer == Function::NONE or update == query)
+    *answer = update;  // query motion or first activated
 }
 
 Function Machine::assign(const Action& action) {
+  if (action.direction != Cue::query) action.extend();
+  Function query = action.motion.motor;
   Function response {};
   for (const Motion* motion : action.motions) {
-    if (assign(motion)) {
-      response = motion->motor;  // returns last activated
+    if (accept(assign(motion))) {
+      answer(&response, query, motion->motor);
     }
   }
   return response;
 }
 
-bool Machine::assign(const Motion* motion) {
-  return motion ? assign(*motion) : false;
+Command Machine::assign(const Motion* motion) {
+  return motion ? assign(*motion) : Command::ignore;
 }
 
-bool Machine::assign(const Motion& motion) {
+Command Machine::assign(const Motion& motion) {
   return control(joints[motion.motor], motion);
 }
 

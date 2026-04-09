@@ -14,8 +14,8 @@ public:
 private:
 
   const Reading& reading;
-  void read();  // doesn't check anything, assumes good reading
-  Reading prior;  // copy needed to spot changes
+  bool read_dial();  // doesn't check anything, assumes good reading
+  Reading prior;     // copy needed to spot changes
 
   Motion* motion;
 

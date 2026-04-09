@@ -36,12 +36,13 @@ int Dial::call() {
   return call(change);
 }
 
-void Dial::update() {
+Reading& Dial::update() {
   if (device) {
     device->take(reading);
   } else {
     follow(rhythm, call, change);
   }
+  return reading;
 }
 
 bool Dial::press() {
@@ -88,4 +89,10 @@ void Dial::set_data(Function fn) {
 
 void Dial::set_switch(Function fn) {
   device->set_switch(fn);
+}
+
+void Dial::set_dial_2() {
+  set_clock(Function::CLOCK_2);
+  set_data(Function::DATA_2);
+  set_switch(Function::SWITCH_2);
 }
