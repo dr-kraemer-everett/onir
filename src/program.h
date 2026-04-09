@@ -2,6 +2,7 @@
 #include "timing.h"
 
 // extends Instruction with multi-joint motions
+// TODO: s/Action/Gesture, move to gesture.h/cc
 class Action : public Instruction {
 public:
   Action(Cue);
@@ -9,6 +10,9 @@ public:
   operator bool() {
     return cue != Cue::none;
   }
+
+  Command extend(const Instruction& todo);   // update from todo.motion
+  Command extend();                          // update from Action::motion
 
   Motion* motions[(int)Function::COUNT] = { };
   Motion*& operator[](Function fn) {

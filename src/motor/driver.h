@@ -8,15 +8,17 @@ public:
 
   Driver(Machine&);
 
-  static Command execute(Program& program, Machine& machine);
   static Command drive(Program& program, Machine& machine);
+  Command drive(Instruction& todo);
+
+  Command drive();
   Command update();
 
 private:
 
-  bool trim(Joint* joint, Program& program) {
+  static bool zero(Joint* joint, Program& program) {
     if (not joint) return false;
-    if (joint->ready()) return true;
+    if (joint->trimmer) return true;
     const Instruction& todo = program.instruction;
     if (todo.cue != Cue::drive) return false;
     Action*& drive = program[Cue::drive];
@@ -27,9 +29,7 @@ private:
     if (not motion) {
       motion = new Motion(todo.motion);
     }
-    if (not joint->trimmer) {
-      joint->trimmer = new Trimmer(todo.reading, motion);
-    }
+    joint->trimmer = new Trimmer(todo.reading, motion);
     return true;
   }
 

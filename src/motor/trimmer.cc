@@ -2,7 +2,6 @@
 
 #include "Arduino.h"
 
-
 Trimmer::Trimmer(const Reading& reading, Motion* motion, bool invert = false) :
   reading(reading), prior(reading), motion(motion), invert(invert) { }
 
@@ -13,47 +12,48 @@ s_small Trimmer::pitch() {
 
 Command Trimmer::execute(Instruction& todo) {
   if (not (todo.command == Command::perform or todo.command == Command::modify)) {
-    return Command::none;  // no action taken, instruction unmodified.
+    return pass(todo);
   }
 
   if (not (todo.cue == Cue::drive)) {
-    return Command::none;
+    return pass(todo);
   }
 
   if (not (todo.motion.motor == motion->motor)) {
-    return Command::none;
+    return pass(todo);
   }
-  if (todo.command == Command::perform) {
-    read();
 
-    // fill in current pitch and timeout for client to read
-    todo.motion.pitch = motion->pitch;
-    todo.motion.winks = motion->winks;  // TODO fix this
-    return done(todo);
-  } else if (todo.command == Command::modify) {
-    if (todo.direction == Cue::invert) {
-      invert = true;
-      return done(todo);
-    } else if (todo.direction == Cue::revert) {
-      invert = false;
-      return done(todo);
-    }
-    return Command::none;
+  if (todo.direction == Cue::invert) {
+    invert = true;
+    return sign(todo);
+  } else if (todo.direction == Cue::revert) {
+    invert = false;
+    return sign(todo);
   }
+
+  if (read_dial()) {
+    todo.motion.pitch = motion->pitch;
+    return pass(todo, Command::modify);
+   }
+  return pass(todo);
 }
 
-void Trimmer::read() {
+bool Trimmer::read_dial() {
   if (reading.button) {
     motion->pitch = 0;
+    return true;
   } else {
     if (prior < reading) {
       (invert) ? pitch_up() : pitch_down();
       prior = reading;
+      return true;
     } else if (prior > reading) {
       (invert) ? pitch_down() : pitch_up();
       prior = reading;
+      return true;
     }
   }
+  return false;
 }
 
 bool Trimmer::pitch_down() {
