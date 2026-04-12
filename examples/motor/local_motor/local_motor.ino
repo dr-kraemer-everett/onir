@@ -15,16 +15,16 @@ Dial* dial_l{};
 Dial* dial_r{};
 Display* display{};
 Driver* driver{};
-Motion run;
-Instruction drive_l;
-Instruction drive_r;
+Motion run{};
+Instruction drive_l{};
+Instruction drive_r{};
 bool running = false;
 
 void update_side(Dial* dial, Instruction& instruction) {
   Reading& reading = dial->update();
   if (reading != instruction.reading) {
     instruction.reading = reading;
-    { // logging
+    {  // logging
       Serial.print("m: ");
       Serial.print((int)instruction.motion.motor);
       Serial.print("; c: ");
@@ -58,12 +58,15 @@ void setup() {
   drive_l.command = Command::perform;
   drive_l.cue = Cue::drive;
   drive_r = Instruction(drive_l);
+  Serial.println((int)&drive_l);
+  Serial.println((int)&drive_r);
   drive_l.motion.motor = Function::MOTOR_L_WHEEL;
   drive_r.motion.motor = Function::MOTOR_R_WHEEL;
 
   Serial.print("gamut: ");
   Serial.println(gamut<Instruction>());
 }
+
 
 void loop() {
   update();

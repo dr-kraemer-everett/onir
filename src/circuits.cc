@@ -28,6 +28,8 @@ void uno_io(Hardware hardware) {
 
 void uno_car(Hardware hardware) {
 
+  clear(hardware);
+
   assign(hardware, Fn::MOTOR_R_WHEEL, 13);
   assign(hardware, Fn::MOTOR_L_WHEEL, 12);
 

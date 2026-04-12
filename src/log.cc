@@ -5,15 +5,15 @@
 #include "string.h"
 
 int wink() { return millis() / 100; }  // a blink is 1/5 s. a wink is half a blink.
-// int log_winks = 600;  // give me a minute to think.
 
+// int log_winks = 600;  // give me a minute to think.
 int log_winks = 10; // I need a second.
 
 void log(const Instruction& s) {
   static long log_time_winks = -log_winks;  // persists across calls
   if (wink() - log_time_winks > log_winks) {
     log_time_winks = wink();
-    print_io(s);
+    print_todo(s);
   }
 }
 
@@ -76,7 +76,7 @@ void print_display(const Message& display) {
 
 void left_pad(int v) {
   // left pad to width 4 incl sign
-  if (v >= 0) Serial.print(' ');
+  if (v >= 0) Serial.print(' ');  // no minus sign
   if (v > -100 && v < 100) Serial.print(' ');
   if (v > -10  && v < 10)  Serial.print(' ');
 }
@@ -87,27 +87,52 @@ void log_id() {
   Serial.print(log_id_++);
 }
 
-void print_io(const Instruction& state) {
-  Serial.print(" {c: ");
-  Serial.print(state.channel);
-  Serial.print(", s: {m: ");
-  print_display(state.message);
-  Serial.print(", p: ");
-  Serial.print(state.message.point);
-  Serial.print("}, d: {v: ");
+void print_motion(const Motion& motion) {
+  Serial.print(" mn: {mt: ");
+  Serial.print((int)motion.motor);
+  Serial.print(", pi: ");
+  Serial.print(motion.pitch);
+  Serial.print(", wi: ");
+  Serial.print(motion.winks);
+  Serial.print("}");
+}
 
-  int v = state.reading.count;
-  left_pad(v);
-  Serial.print(v);
-  Serial.print("; d: ");
-  int d = state.reading.down_count;
-  left_pad(d);
-  Serial.print(d);
+void print_todo(const Instruction& todo) {
+  if (not todo) return;
+  print_instruction(todo);
+}
 
-  Serial.print("; b: ");
-  Serial.print(state.reading.button ? 1 : 0);
-  Serial.print("}, #: ");
-  Serial.print(checksum(state));
+void print_instruction(const Instruction& todo) {
+  Serial.print(" {cm: ");
+  Serial.print((int)todo.command);
+  Serial.print(", rs: ");
+  Serial.print((int)todo.respond);
+  Serial.print(", cu: ");
+  Serial.print((int)todo.cue);
+  print_motion(todo.motion);
+  // Serial.print(", s: {m: ");
+  // print_display(todo.message);
+  // Serial.print(", p: ");
+  // Serial.print(todo.message.point);
+  Serial.print(", d: ");
+  {
+    Serial.print("{v: ");
+    int v = todo.reading.count;
+    left_pad(v);
+    Serial.print(v);
+    Serial.print("; d: ");
+    int d = todo.reading.down_count;
+    left_pad(d);
+    Serial.print(d);
+    Serial.print("; b: ");
+    Serial.print(todo.reading.button ? 1 : 0);
+    Serial.print("}");
+  }
+  Serial.print(", dir: ");
+  Serial.print((int)todo.direction);
+
+  Serial.print(", #: ");
+  Serial.print(checksum(todo));
   Serial.print(" } (m: ");
   Serial.print(millis());
   Serial.println(")");
@@ -127,5 +152,5 @@ void log_io(Unit* unit) {
     return;
   }
   mirror_device_units(unit);
-  print_io(unit->local_);
+  print_todo(unit->local_);
 }
