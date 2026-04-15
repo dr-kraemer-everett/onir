@@ -4,7 +4,7 @@
 #include "Arduino.h"
 #include "Servo.h"
 
-#define LOG_SERVO_CHANGE true
+#define LOG_SERVO_CHANGE false
 
 const int PULSE_NEUTRAL = 1500;
 
@@ -25,7 +25,6 @@ long end_millis(u_small winks) {
   if (winks == 0) return UNSET;
   return millis() + winks * millis_per_wink;
 }
-
 
 bool Joint::write() {
   if (not servo) return false;
@@ -62,6 +61,8 @@ Joint* Machine::engage(Function function, Target target, s_small pitch) {
 void Machine::engage_hardware(Target target) {
   for (Function motor = Function::MOTOR_MAIN; motor < Function::MOTOR_END; motor++) {
     if (dispatch(hardware, motor) != UNSET) {
+      Serial.print("engage motor ");
+      Serial.println((int)motor);
       engage(motor, target, 0);
     }
   }
@@ -80,7 +81,7 @@ void Machine::release(Function function) {
 }
 
 static Command control(Joint* joint, Motion motion) {
-  if (not joint) return Command::ignore;
+  if (not joint) return Command::missing;
 
   joint->target_usec = servo_pulse(motion.pitch);
   if (LOG_SERVO_CHANGE) {
@@ -96,30 +97,31 @@ static void Machine::answer(Function* answer, Function query, Function update) {
     *answer = update;  // query motion or first activated
 }
 
-Function Machine::assign(const Action& action) {
-  if (action.direction != Cue::query) action.extend();
-  Function query = action.motion.motor;
+static Command Machine::assign(const Motion* motion) {
+  return motion ? assign(*motion) : Command::reject;
+}
+
+static Command Machine::assign(const Motion& motion) {
+  return control(joints[motion.motor], motion);
+}
+
+Function Machine::assign(const Operation& operation) {
+  if (operation.direction != Cue::query) operation.extend();
+  Function query = operation.motion.motor;
   Function response {};
-  for (const Motion* motion : action.motions) {
-    if (accept(assign(motion))) {
+  for (const Motion* motion : operation.motions) {
+    Command result = assign(motion);
+    bool outcome = performative(result);
+    if (true) {
       answer(&response, query, motion->motor);
     }
   }
   return response;
 }
 
-Command Machine::assign(const Motion* motion) {
-  return motion ? assign(*motion) : Command::ignore;
-}
-
-Command Machine::assign(const Motion& motion) {
-  return control(joints[motion.motor], motion);
-}
-
 int Machine::advance(Function function) {
   Joint* joint = joints[function];
   if (not joint) return 0;
-
   const int delta = pulse_delta(*joint);
   if (not delta) return 0;
 
@@ -153,7 +155,6 @@ void Machine::halt() {
 }
 
 static bool stop_seek(Joint* joint) {
-  Serial.println("stop_seek");
   if (not joint) return false;
 
   if (joint->target != Target::position) return false;

@@ -1,21 +1,16 @@
 #include "driver.h"
+#include "log.h"
 
 #include "Arduino.h"
 
 bool logging = true;
 
-void ll(String str) {
-  if (logging) {
-    Serial.println(str);
-  }
-}
-
 Driver::Driver(Machine& machine) : machine(machine) {
 
-  program[Cue::drive] = new Action(Cue::drive);
+  program[Cue::drive] = new Operation(Cue::drive);
 
-  Action* stop = new Action(Cue::stop);
-  Action* go = new Action(Cue::go);
+  Operation* stop = new Operation(Cue::stop);
+  Operation* go = new Operation(Cue::go);
 
   program[Cue::stop] = stop;
   program[Cue::go] = go;
@@ -33,80 +28,86 @@ Driver::Driver(Machine& machine) : machine(machine) {
 }
 
 static Command Driver::drive(Program& program, Machine& machine) {
-  ll("execute");
   Instruction& todo = program.instruction;
   if (not todo) {
-    return sign(todo);                                      // nothing to report
+    return reject(todo);                                    // nothing.
   }
 
   const Motion& motion = todo.motion;
   Function function = motion.motor;
   if (motion and not is_motor(function)){
-    return block(todo);                                    // nonsense
+    return reject(todo);                                    // nonsense
   }
+
   Joint* joint = machine[function];
-  if (not joint) return fail(todo);                        // don't have one of those
+  if (not joint) return reject(todo, Command::missing);     // don't have one of those
 
   Command& command = todo.command;
   Cue cue = todo.cue;
 
   if (command == Command::perform or command == Command::modify) {
-    ll("perform/modify");
     if (cue == Cue::none) {
-      if (not motion) return block(todo);                 // nothing to perform/modify
-      return mark(todo, machine.assign(motion));
+      if (not motion) return reject(todo);                    // nothing to perform/modify
+
+      return mark(todo, machine.assign(motion));              // do the motion
     }
+
     if (cue == Cue::drive) {                                  // manual mode
-      ll("drive");
-      if (not motion) return block(todo);                     // can't drive nothing
+      if (not motion) return reject(todo);                    // can't drive nothing
+
       if (not joint->trimmer) zero(joint, program);           // set up trimmer
-      Command response = joint->drive(todo);
-      if (accept(response) and command == Command::perform) { // do it
-	return mark(todo, machine.assign(todo.motion));       // pass to trimmer
+      Command response = joint->drive(todo);                  // update joint setting
+      if (performative(response) and
+          command == Command::perform) {                      // activate joint
+        return sign(todo, machine.assign(todo.motion));       // pass to machine
       }
-      return mark(todo, Command::modify);                     // updated drive motion
+
+      return sign(todo);                                 // updated drive motion
     }
 
-    Action* action_ = program[cue];                           // preprogrammed action
-    ll("cue");
-    if (not action_) {
+    Operation* operation_ = program[cue];              // preprogrammed operation
+    if (not operation_) {
       if (not motion) {
-	return fail(todo);                                    // don't know how to do nothing
+        return reject(todo);                     // don't know how to do nothing
       } else {
-	action_ = new Action(todo);
+        operation_ = new Operation(todo);
       }
     }
 
-    Action& action = *action_;
-    Function motor = machine.assign(action);                  // queried or first found
-    todo.motion = *action[motor];
-    todo.direction = action.direction;
-    todo.reading = action.reading;
-    todo.message = action.message;
+    Operation& operation = *operation_;
+    Function motor = machine.assign(operation);   // queried or first found
+    todo.motion = *operation[motor];
+    todo.direction = operation.direction;
+    todo.reading = operation.reading;
+    todo.message = operation.message;
     return sign(todo);
   }
 
   if (command == Command::copy) {
     Cue direction = todo.direction;
     todo.direction = Cue::none;
-    program[direction] = new Action(todo);
+    program[direction] = new Operation(todo);
   }
 
-  if (command == Command::condition) {
-    return block(todo);
-  }
+  // if (command == Command::condition) {
+  //   return (todo);
+  // }
 
-  return block(todo);
+  return error(todo);
 }
 
 Command Driver::drive(Instruction& todo) {
   program.instruction = todo;
-  Command ret = drive();
-  return mark(todo, ret);
+  Command result = drive();
+  todo = program.instruction;
+  return result;
 }
 
 Command Driver::drive() {
-  Command response = drive(program, machine);
+  Command response {};
+  if (program) {
+    Command response = drive(program, machine);
+  }
   machine.update();
   return mark(program.instruction, response);
 }

@@ -28,7 +28,9 @@ void uno_io(Hardware hardware) {
 
 void uno_car(Hardware hardware) {
 
-  assign(hardware, Fn::MOTOR_R_WHEEL, 13);
+  clear(hardware);
+
+  assign(hardware, Fn::MOTOR_R_WHEEL, 10);
   assign(hardware, Fn::MOTOR_L_WHEEL, 12);
 
   assign(hardware, Fn::CLOCK, 17);   // A3

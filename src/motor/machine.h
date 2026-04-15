@@ -1,7 +1,7 @@
 #pragma once
 
 #include "timing.h"
-#include "program.h"
+#include "motor/program.h"
 
 const extern int PULSE_NEUTRAL;
 const extern int PULSE_MAX;
@@ -58,7 +58,7 @@ public:
   void engage_hardware(Target);
 
   void release(Function joint);
-  Function assign(const Action&);
+  Function assign(const Operation&);
   Command assign(const Motion*);
   Command assign(const Motion&);
 

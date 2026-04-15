@@ -71,7 +71,7 @@ struct Motion {
 
 enum class Cue : u_small {
   none,   // unset
-  stop,   // static response for motor type ("stay there" or "don't spin")
+  stop,   // static responses for motor type ("stay there" or "don't spin")
   go,     // default action
 
   // act
@@ -103,22 +103,54 @@ inline bool is_motor(Cue cue) {
 }
 
 enum class Command : u_small {
-  none, //
+  none,       //
   perform,    // showtime
-  ignore,     // driver indicates bad instruction
 
   modify,     // add or modify motion for cue
   copy,       // duplicate cue (uses .direction)
   forget,     // delete object
 
-  condition,  // NOT IMPLEMENTED (place condition on cue)
+  idle,       // driver indicates no action
+  missing,    // driving indicates lack of requested joint
+  reject,     // driver indicates bad instruction
+  error,      // logical exception in device (layer 8)
+
+  // condition,  // NOT IMPLEMENTED (place condition on cue)
 
 };
 
-static bool accept(const Command& command) {
-  if (command == Command::none) return false;
-  if (command == Command::ignore) return false;
+static inline bool imperative(const Command& command) {  // sensible request?
+  if (command == Command::none)    return false;
+
+  if (command == Command::idle)    return false;
+  if (command == Command::reject)  return false;
+  if (command == Command::missing) return false;
+  if (command == Command::error)   return false;
+
   return true;
+}
+
+
+
+static inline bool performative(const Command& response) {  // need motor update?
+  if (response == Command::perform) return true;
+  if (response == Command::modify)  return true;
+  return false;
+}
+
+static inline bool responsive(const Command& command) {  // active response?
+  if (command == Command::none)    return false;
+
+  if (command == Command::idle)    return true;
+  if (command == Command::missing) return true;
+  if (command == Command::reject)  return true;
+  if (command == Command::error)   return true;
+
+  return false;
+}
+
+static bool informative(const Command& response) {  // valid response?
+  return response != Command::none;
 }
 
 struct Instruction {
@@ -126,8 +158,44 @@ struct Instruction {
 
   Command command = Command::none;    // boss to driver
   Command respond = Command::none;    // driver to boss
+
+  // response codes:
+  //
+  // {(c)ommand; (r)espond}
+
+  // INVALID (but still boolean-false)
+  // {c= none;       r = none}      == misformed. (why send this?)
+
+  // TRUE values (there could be something to do):
+
+  // incoming:
+  // {c = <active>;  r = none}      == incoming (from client)
+  //
+  // processing:
+  // {c = <active>;  r = reject}    == illogical request (unsigned)
+  // {c = <active>;  r = <other>}   == processing (mid-task)
+
+  // FALSE values (nothing to do here):
+
+  // done:
+  // {c = none;      r = <active>}  == took an action (expected)
+
+  // apt requests:
+  // {c= none;       r = idle}      == no action needed
+  // {c= idle;       r = idle}      == no action needed -- rate signal
+
+  // bad requests:
+  // {c = reject     r = none}      == no request made
+  // {c = reject;    r = idle}      == over-rate error
+  // {c = reject     r = missing}   == missing needed hardware
+  // {c = reject     r = error}     == bad state -- logic error in device
+  // {c = reject;    r = <other>}   == unreasonable request
+
+  // returns true if instruction needs action:
   operator bool() const {
-    return command != Command::none and respond != Command::ignore;
+    if (imperative(command)) return true;
+    if (not informative(respond)) return true;
+    return false;
   }
 
   Cue cue = Cue::go;          // engage motor cue
@@ -145,57 +213,121 @@ struct Instruction {
   }
 };
 
-static Command pass(Instruction& todo, Command response) {
+static inline bool invalid(const Instruction& todo) {
+  return todo.command == Command::none and todo.respond == Command::none;
+}
+
+static inline bool rejected(const Instruction& todo) {
+  return todo.command == Command::reject;
+}
+
+static inline bool performed(const Instruction& todo) {
+  return todo.command == Command::none and todo.respond == Command::perform;
+}
+
+static inline bool modified(const Instruction& todo) {
+  return todo.command == Command::none and todo.respond == Command::modify;
+}
+
+static inline bool copied(const Instruction& todo) {
+  return todo.command == Command::none and todo.respond == Command::copy;
+}
+
+static inline bool forgotten(const Instruction& todo) {
+  return todo.command == Command::none and todo.respond == Command::forget;
+}
+
+static inline bool succeeded(const Instruction& todo) {
+  return todo.respond == Command::none and imperative(todo.respond);
+}
+
+static inline bool idled(const Instruction& todo) {
+
+  return ((todo.command == Command::none or todo.command == Command::idle) and
+          todo.respond == Command::idle);
+}
+
+static inline Instruction& perform(Instruction& todo) {
+  todo.command = Command::perform;
+  todo.respond = Command::none;
+  return todo;
+}
+
+static inline Instruction& modify(Instruction& todo) {
+  todo.command = Command::modify;
+  todo.respond = Command::none;
+  return todo;
+}
+
+static inline Instruction& copy(Instruction& todo) {
+  todo.command = Command::copy;
+  todo.respond = Command::none;
+  return todo;
+}
+
+static inline Instruction& forget(Instruction& todo) {
+  todo.command = Command::forget;
+  todo.respond = Command::none;
+  return todo;
+}
+
+// sensible request, but no action was needed.
+static Command idle(Instruction& todo) {
+  todo.respond = Command::idle;
+  todo.command = Command::none;  // TODO: set rate-limit flag values here
+  return todo.command;
+}
+
+static inline bool completed(const Instruction& todo) {
+  return succeeded(todo) or idled(todo);
+}
+
+// return response value; let go of todo unaltered.
+static Command release(Instruction& todo, Command response) {
   return response;
 }
 
-static Command pass(Instruction& todo) {
-  return pass(todo, Command::none);
+// let go of todo unaltered; empty response.
+static Command release(Instruction& todo) {
+  return Command::none;
 }
 
+// set and return response field from response; release instruction.
 static Command mark(Instruction& todo, Command response) {
   todo.respond = response;
-  pass(todo, response);
+  return release(todo, response);
 }
-
 static Command apply(Command response, Instruction& todo) {
   todo.respond = response;
-  pass(todo, response);
+  return release(todo, response);
+}
+
+static Command reject(Instruction& todo, Command response) {
+  todo.respond = response;
+  todo.command = Command::reject;
+  return todo.command;
+}
+
+static Command reject(Instruction& todo) {
+  todo.respond = todo.command;
+  todo.command = Command::reject;
+  return todo.command;
 }
 
 static Command sign(Instruction& todo) {
+  if (not imperative(todo.command) or not informative(todo.respond))
+    return reject(todo);
+
   Command command = todo.command;
   todo.command = Command::none;
   return mark(todo, command);
 }
 
-static bool done(Instruction& todo) {
-  return todo.respond == Command::none and accept(todo.respond);
+static Command sign(Instruction& todo, Command response) {
+  todo.respond = response;
+  return sign(todo);
 }
 
-static bool modified(Instruction& todo) {
-  return todo.command != Command::none and todo.respond != Command::none;
-}
-
-static Command fail(Instruction& todo) {
-  Command command = todo.command;
-  todo.command = Command::none;
-  return mark(todo, Command::ignore);
-}
-
-static bool failed(Instruction& todo) {
-  return todo.respond == Command::ignore;
-}
-
-static Command block(Instruction& todo) {
-  todo.command = Command::ignore;
-  return fail(todo);
-}
-
-static bool blocked(Instruction& todo) {
-  return todo.command == Command::ignore;
-}
-
-static bool modified(Instruction& todo, Command response) {
-  return response == Command::modify or todo.respond == Command::modify;
+static Command error(Instruction& todo) {
+  return reject(todo, Command::error);
 }

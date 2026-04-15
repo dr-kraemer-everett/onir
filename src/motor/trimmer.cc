@@ -1,4 +1,5 @@
 #include "trimmer.h"
+#include "log.h"
 
 #include "Arduino.h"
 
@@ -11,47 +12,39 @@ s_small Trimmer::pitch() {
 }
 
 Command Trimmer::execute(Instruction& todo) {
-  if (not (todo.command == Command::perform or todo.command == Command::modify)) {
-    return pass(todo);
-  }
+  if (not performative(todo.command)) return error(todo);
 
-  if (not (todo.cue == Cue::drive)) {
-    return pass(todo);
-  }
+  if (not (todo.cue == Cue::drive)) return error(todo);
 
-  if (not (todo.motion.motor == motion->motor)) {
-    return pass(todo);
-  }
+  if (not (todo.motion.motor == motion->motor)) return error(todo);
 
   if (todo.direction == Cue::invert) {
     invert = true;
-    return sign(todo);
+    Serial.println("execute: invert");
+
+    return sign(todo, Command::modify);
   } else if (todo.direction == Cue::revert) {
     invert = false;
-    return sign(todo);
+    Serial.println("execute: revert");
+    return sign(todo, Command::modify);
   }
 
   if (read_dial()) {
     todo.motion.pitch = motion->pitch;
-    return pass(todo, Command::modify);
-   }
-  return pass(todo);
+    return mark(todo, Command::modify);
+  }
+  return mark(todo, Command::idle);
 }
 
 bool Trimmer::read_dial() {
-  if (reading.button) {
-    motion->pitch = 0;
+  if (prior < reading) {
+    (invert) ? pitch_up() : pitch_down();
+    prior = reading;
     return true;
-  } else {
-    if (prior < reading) {
-      (invert) ? pitch_up() : pitch_down();
-      prior = reading;
-      return true;
-    } else if (prior > reading) {
-      (invert) ? pitch_down() : pitch_up();
-      prior = reading;
-      return true;
-    }
+  } else if (prior > reading) {
+    (invert) ? pitch_down() : pitch_up();
+    prior = reading;
+    return true;
   }
   return false;
 }

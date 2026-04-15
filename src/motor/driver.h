@@ -21,9 +21,9 @@ private:
     if (joint->trimmer) return true;
     const Instruction& todo = program.instruction;
     if (todo.cue != Cue::drive) return false;
-    Action*& drive = program[Cue::drive];
+    Operation*& drive = program[Cue::drive];
     if (not drive) {
-      drive = new Action(todo);
+      drive = new Operation(todo);
     }
     Motion*& motion = (*drive)[todo.motion.motor];
     if (not motion) {
