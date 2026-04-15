@@ -247,6 +247,30 @@ static inline bool idled(const Instruction& todo) {
           todo.respond == Command::idle);
 }
 
+static inline Instruction& perform(Instruction& todo) {
+  todo.command = Command::perform;
+  todo.respond = Command::none;
+  return todo;
+}
+
+static inline Instruction& modify(Instruction& todo) {
+  todo.command = Command::modify;
+  todo.respond = Command::none;
+  return todo;
+}
+
+static inline Instruction& copy(Instruction& todo) {
+  todo.command = Command::copy;
+  todo.respond = Command::none;
+  return todo;
+}
+
+static inline Instruction& forget(Instruction& todo) {
+  todo.command = Command::forget;
+  todo.respond = Command::none;
+  return todo;
+}
+
 // sensible request, but no action was needed.
 static Command idle(Instruction& todo) {
   todo.respond = Command::idle;

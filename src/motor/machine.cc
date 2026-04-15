@@ -4,7 +4,7 @@
 #include "Arduino.h"
 #include "Servo.h"
 
-#define LOG_SERVO_CHANGE true
+#define LOG_SERVO_CHANGE false
 
 const int PULSE_NEUTRAL = 1500;
 
@@ -122,7 +122,6 @@ Function Machine::assign(const Operation& operation) {
 int Machine::advance(Function function) {
   Joint* joint = joints[function];
   if (not joint) return 0;
-
   const int delta = pulse_delta(*joint);
   if (not delta) return 0;
 
@@ -156,7 +155,6 @@ void Machine::halt() {
 }
 
 static bool stop_seek(Joint* joint) {
-  Serial.println("stop_seek");
   if (not joint) return false;
 
   if (joint->target != Target::position) return false;

@@ -16,6 +16,6 @@ public:
 
   Motion* motions[(int)Function::COUNT] = { };
   Motion*& operator[](Function fn) {
-    return motions[(int)cue];
+    return motions[(int)fn];
   }
 };

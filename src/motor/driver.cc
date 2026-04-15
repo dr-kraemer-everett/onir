@@ -5,12 +5,6 @@
 
 bool logging = true;
 
-void ll(String str) {
-  if (logging) {
-    Serial.println(str);
-  }
-}
-
 Driver::Driver(Machine& machine) : machine(machine) {
 
   program[Cue::drive] = new Operation(Cue::drive);
@@ -59,28 +53,19 @@ static Command Driver::drive(Program& program, Machine& machine) {
     }
 
     if (cue == Cue::drive) {                                  // manual mode
-      Serial.println("Driver::drive");
       if (not motion) return reject(todo);                    // can't drive nothing
 
       if (not joint->trimmer) zero(joint, program);           // set up trimmer
       Command response = joint->drive(todo);                  // update joint setting
-      Serial.print("drive: joint response: ");
-      Serial.println((int)response);
       if (performative(response) and
           command == Command::perform) {                      // activate joint
-        Serial.print("drive: assign -> ");
-        mark(todo, machine.assign(todo.motion));              // pass to machine
-        Serial.print("new pitch: ");
-        Serial.println(todo.motion.pitch);
-        return sign(todo, Command::perform);
+        return sign(todo, machine.assign(todo.motion));       // pass to machine
       }
 
-      Serial.println("drive: modify&sign");
-      return sign(todo);;                        // updated drive motion
+      return sign(todo);                                 // updated drive motion
     }
 
     Operation* operation_ = program[cue];              // preprogrammed operation
-    ll("cue");
     if (not operation_) {
       if (not motion) {
         return reject(todo);                     // don't know how to do nothing
@@ -113,12 +98,16 @@ static Command Driver::drive(Program& program, Machine& machine) {
 
 Command Driver::drive(Instruction& todo) {
   program.instruction = todo;
-  Command ret = drive();
-  return mark(todo, ret);
+  Command result = drive();
+  todo = program.instruction;
+  return result;
 }
 
 Command Driver::drive() {
-  Command response = drive(program, machine);
+  Command response {};
+  if (program) {
+    Command response = drive(program, machine);
+  }
   machine.update();
   return mark(program.instruction, response);
 }
