@@ -90,10 +90,20 @@ using Hardware = int[(int)Function::COUNT];
 extern const Hardware no_hardware;
 extern const int hardware_size;
 
-int assign(Hardware hardware, Function fn, int pin);
 int dispatch(const Hardware& hardware, Function fn);
+
+inline bool const is_unset(const Hardware& hardware, Function fn) {
+  return is_unset(dispatch(hardware,fn));
+}
+
+inline bool const is_set(const Hardware& hardware, Function fn) {
+  return not is_unset(dispatch(hardware,fn));
+}
+
+int assign(Hardware hardware, Function fn, int pin);
 bool empty(const Hardware& hardware);
 void clear(Hardware hardware);
+void power(const Hardware&);
 
 template <typename T>
 struct Resource {

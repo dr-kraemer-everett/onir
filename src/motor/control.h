@@ -40,7 +40,13 @@ public:
 
 private:
   void init();
-  static void update_link(Link&);
+  void Control::print_new(const Instruction&, Instruction& prior);
+
+  static const void read_link(Link&);
+  static const void write_link(Link&);
+  static const Instruction& update_link(Link&);
+  Instruction left_prior { };
+  Instruction right_prior { };
 
   const int channel;
 

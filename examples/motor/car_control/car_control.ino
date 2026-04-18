@@ -10,12 +10,13 @@
 Hardware hardware = {};
 Control* control = {};
 
-const int channel = 0x0A;
+const int channel = 0x09;
 
 void setup() {
   Serial.begin(9600);
   uno_car(hardware);
-  Wire.begin();   // client mode
+  power(hardware);
+  Wire.begin();  // client mode
   control = new Control(channel, hardware);
   Serial.print("start loop (~");
   Serial.print(gamut<Instruction>());

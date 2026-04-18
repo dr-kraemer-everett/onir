@@ -35,42 +35,49 @@ void Driver::init() {
   }
 }
 
-static Command Driver::drive(Program& program, Machine& machine) {
+static Command Driver::drive(Machine& machine, Program& program) {
   Instruction& todo = program.instruction;
   if (not todo) {
-    return reject(todo);                                    // nothing.
+    return sign(todo);                            // nothing to do.
   }
 
   const Motion& motion = todo.motion;
   Function function = motion.motor;
   if (motion and not is_motor(function)){
-    return reject(todo);                                    // nonsense
+    Serial.println("reject 1 ");
+    return reject(todo);                          // nonsense
   }
 
   Joint* joint = machine[function];
-  if (not joint) return reject(todo, Command::missing);     // don't have one of those
+  if (not joint) {
+    Serial.println("reject 2 ");
+    return missing(todo);                         // don't have one of those
+  }
 
   Command& command = todo.command;
   Cue cue = todo.cue;
 
   if (command == Command::perform or command == Command::modify) {
     if (cue == Cue::none) {
-      if (not motion) return reject(todo);                    // nothing to perform/modify
+      if (not motion) {
+        return reject(todo);                    // nothing to perform/modify
+      }
 
       return mark(todo, machine.assign(motion));              // do the motion
     }
 
     if (cue == Cue::drive) {                                  // manual mode
-      if (not motion) return reject(todo);                    // can't drive nothing
-
-      if (not joint->trimmer) zero(joint, program);           // set up trimmer
-      Command response = joint->drive(todo);                  // update joint setting
-      if (performative(response) and
-          command == Command::perform) {                      // activate joint
-        return sign(todo, machine.assign(todo.motion));       // pass to machine
+      if (not motion) {
+        return reject(todo);                    // can't drive nothing
       }
 
-      return sign(todo);                                // updated drive motion
+      if (not joint->trimmer) zero(joint, program);           // set up trimmer
+
+      if (performative(joint->drive(todo)) and command == Command::perform) {
+        return sign(todo, machine.assign(todo.motion));       // activate joint
+      }
+
+      return sign_modified(todo);                             // updated drive motion
     }
 
     Operation* operation_ = program[cue];               // preprogrammed operation
@@ -108,10 +115,11 @@ Command Driver::follow(Instruction& todo) {
 }
 
 Command Driver::drive() {
-  Command response {};
+  Command response { };
   if (program) {
-    Command response = drive(program, machine);
+    drive(machine, program);
   }
   machine.advance();
-  return mark(program.instruction, response);
+  if (not program) return release(program.instruction, response);
+  return sign(program.instruction, response);
 }

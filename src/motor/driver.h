@@ -9,7 +9,7 @@ public:
   Driver(Machine&);
   Driver(const Hardware&);
 
-  static Command drive(Program&, Machine&);
+  static Command drive(Machine&, Program&);
   Command follow(Instruction& todo);
 
   Command drive();
@@ -36,6 +36,6 @@ private:
     return true;
   }
 
-  Program program;
+  Program program { };
   Machine& machine;
 };

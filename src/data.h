@@ -103,19 +103,19 @@ inline bool is_motor(Cue cue) {
 }
 
 enum class Command : u_small {
-  none,       //
-  perform,    // showtime
+  none,       //                                              0
+  perform,    // showtime                                     1
 
-  modify,     // add or modify motion for cue
-  copy,       // duplicate cue (uses .direction)
-  forget,     // delete object
+  modify,     // add or modify motion for cue                 2
+  copy,       // duplicate cue (uses .direction)              3
+  forget,     // delete object                                4
 
-  idle,       // driver indicates no action
-  missing,    // driving indicates lack of requested joint
-  reject,     // driver indicates bad instruction
-  error,      // logical exception in device (layer 8)
+  idle,       // driver indicates no action                   5
+  missing,    // driving indicates lack of requested joint    6
+  reject,     // driver indicates bad instruction             7
+  error,      // logical exception in device (== layer)       8
 
-  // condition,  // NOT IMPLEMENTED (place condition on cue)
+  // condition,  // NOT IMPLEMENTED (place condition on cue)  9
 
 };
 
@@ -193,12 +193,11 @@ struct Instruction {
 
   // returns true if instruction needs action:
   operator bool() const {
-    if (imperative(command)) return true;
-    if (not informative(respond)) return true;
+    if (imperative(command) and not informative(respond)) return true;
     return false;
   }
 
-  Cue cue = Cue::go;          // engage motor cue
+  Cue cue;                    // engage motor cue
   Motion motion;
 
   Message message;            // displays
@@ -213,7 +212,7 @@ struct Instruction {
   }
 };
 
-static inline bool invalid(const Instruction& todo) {
+static inline bool blank(const Instruction& todo) {
   return todo.command == Command::none and todo.respond == Command::none;
 }
 
@@ -271,6 +270,12 @@ static inline Instruction& forget(Instruction& todo) {
   return todo;
 }
 
+static inline Command& sign_modified(Instruction& todo) {
+  todo.command = Command::none;
+  todo.respond = Command::modify;
+  return todo.respond;
+}
+
 // sensible request, but no action was needed.
 static Command idle(Instruction& todo) {
   todo.respond = Command::idle;
@@ -283,51 +288,57 @@ static inline bool completed(const Instruction& todo) {
 }
 
 // return response value; let go of todo unaltered.
-static Command release(Instruction& todo, Command response) {
+static Command& release(Instruction& todo, Command response) {
   return response;
 }
 
-// let go of todo unaltered; empty response.
-static Command release(Instruction& todo) {
-  return Command::none;
+// let go of todo unaltered.
+static Command& release(Instruction& todo) {
+  return todo.respond;
 }
 
 // set and return response field from response; release instruction.
-static Command mark(Instruction& todo, Command response) {
+static Command& mark(Instruction& todo, Command response) {
   todo.respond = response;
-  return release(todo, response);
-}
-static Command apply(Command response, Instruction& todo) {
-  todo.respond = response;
-  return release(todo, response);
+  return release(todo);
 }
 
-static Command reject(Instruction& todo, Command response) {
-  todo.respond = response;
-  todo.command = Command::reject;
-  return todo.command;
+static Command& apply(Command response, Instruction& todo) {
+  return mark(todo, response);
 }
 
-static Command reject(Instruction& todo) {
-  todo.respond = todo.command;
-  todo.command = Command::reject;
-  return todo.command;
+static Command& reject(Instruction& todo) {
+  todo.respond = Command::reject;
+  return todo.respond;
 }
 
-static Command sign(Instruction& todo) {
-  if (not imperative(todo.command) or not informative(todo.respond))
-    return reject(todo);
+static Command& missing(Instruction& todo) {
+  todo.respond = Command::missing;
+  return todo.respond;
+}
 
-  Command command = todo.command;
+static Command& error(Instruction& todo) {
+  todo.respond = Command::error;
+  return todo.respond;
+}
+
+static Command& sign(Instruction& todo) {
+  if (not informative(todo.command)) {
+    return release(todo);                // nothing to do yet.
+  }
+
+  if (not imperative(todo.command)) {
+    return reject(todo);                // nonsense
+  }
+
+  if (not informative(todo.respond)) {  // logic error -- needed to sign.
+    return error(todo);
+  }
   todo.command = Command::none;
-  return mark(todo, command);
+  return release(todo);
 }
 
 static Command sign(Instruction& todo, Command response) {
   todo.respond = response;
   return sign(todo);
-}
-
-static Command error(Instruction& todo) {
-  return reject(todo, Command::error);
 }

@@ -103,7 +103,9 @@ void print_todo(const Instruction& todo) {
 }
 
 void print_instruction(const Instruction& todo) {
-  Serial.print(" {cm: ");
+  Serial.print(" { ch:");
+  Serial.print(todo.channel);
+  Serial.print(", cm: ");
   Serial.print((int)todo.command);
   Serial.print(", rs: ");
   Serial.print((int)todo.respond);
@@ -126,7 +128,7 @@ void print_instruction(const Instruction& todo) {
     Serial.print(d);
     Serial.print("; b: ");
     Serial.print((int)todo.reading.button);
-    Serial.print("}");
+    Serial.print(" }");
   }
   Serial.print(", dir: ");
   Serial.print((int)todo.direction);

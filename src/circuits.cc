@@ -41,4 +41,7 @@ void uno_car(Hardware hardware) {
   assign(hardware, Fn::DATA_2, 4);
   assign(hardware, Fn::SWITCH_2, 5);
 
+  assign(hardware, Fn::VCC, 6);
+  assign(hardware, Fn::GROUND, 7);
+
 }

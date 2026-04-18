@@ -1,5 +1,7 @@
 #include "hardware.h"
 
+#include "Arduino.h"
+
 const Hardware no_hardware = { };
 const int hardware_size = (int)Function::COUNT;
 
@@ -27,4 +29,17 @@ bool empty(const Hardware& hardware) {
 
 int dispatch(const Hardware& hardware, Function fn) {
   return hardware[(int)fn];
+}
+
+void power(const Hardware& hardware) {
+  if (is_set(hardware, Function::GROUND)) {
+    const int ground_pin = dispatch(hardware, Function::GROUND);
+    pinMode(ground_pin, OUTPUT);
+    digitalWrite(ground_pin, LOW);
+  }
+  if (is_set(hardware, Function::VCC)) {
+    const int vcc_pin = dispatch(hardware, Function::VCC);
+    pinMode(vcc_pin, OUTPUT);
+    digitalWrite(vcc_pin, HIGH);
+  }
 }
