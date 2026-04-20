@@ -26,7 +26,7 @@ public:
     return dials[(int)fn];
   }
 protected:
-  Link* dials[(int)Function::COUNT] = { };
+  Link* dials[(int)Function::count] = { };
 };
 
 class Stem : public Panel {  // a pair of linked dials (ideally mounted co-axially)
@@ -44,9 +44,8 @@ public:
   Stem(const Hardware& hardware);
 
 private:
-  init();
-  Function fn_left =  Function::MOTOR_L_WHEEL;
-  Function fn_right = Function::MOTOR_R_WHEEL;
+  Function fn_left =  Function::motor_l_wheel;
+  Function fn_right = Function::motor_r_wheel;
 };
 
 class Control {
@@ -54,7 +53,7 @@ public:
   Control(int channel, Stem&);
   Control(int channel, const Hardware&);
 
-  Command update();
+  Code update();
 
 private:
   const int channel;

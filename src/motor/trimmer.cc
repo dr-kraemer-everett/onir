@@ -11,7 +11,7 @@ s_small Trimmer::pitch() {
   return motion->pitch;
 }
 
-Command Trimmer::execute(Instruction& todo) {
+Code Trimmer::execute(Instruction& todo) {
   if (not performative(todo.command)) return error(todo);
 
   if (not (todo.cue == Cue::drive)) return error(todo);
@@ -22,18 +22,18 @@ Command Trimmer::execute(Instruction& todo) {
     invert = true;
     Serial.println("execute: invert");
 
-    return sign(todo, Command::modify);
+    return sign(todo, Code::modify);
   } else if (todo.direction == Cue::revert) {
     invert = false;
     Serial.println("execute: revert");
-    return sign(todo, Command::modify);
+    return sign(todo, Code::modify);
   }
 
   if (read_dial()) {
     todo.motion.pitch = motion->pitch;
-    return mark(todo, Command::modify);
+    return mark(todo, Code::modify);
   }
-  return mark(todo, Command::idle);
+  return mark(todo, Code::idle);
 }
 
 bool Trimmer::read_dial() {

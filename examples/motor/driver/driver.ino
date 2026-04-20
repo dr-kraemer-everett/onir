@@ -38,9 +38,7 @@ void setup() {
   Wire.onReceive(take_instruction);
   Wire.onRequest(send_outcome);
 
-  Serial.print("start (~");
-  Serial.print(gamut<Instruction>());
-  Serial.println(" free):");
+  memcheck();
 }
 
 void loop() {

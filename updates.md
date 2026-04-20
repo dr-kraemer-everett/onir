@@ -1,5 +1,13 @@
 # developer updates
 
+2026-04-20:
+
+control driver over I2C
+
+Been a while since the last update. It seemed like using the bot was just slowing me down, and the conversations with it were the only potentially interesting parts that weren't mostly just dry commentary on the change log.
+
+But now I have a little car that drives around when I turn the dials, which I enjoy. Next it needs a display so I can make out what exactly I'm doing. Then probably over to CAD to bang out a case to make the control look like more than a tangle of wires and ICs waiting for things to short.
+
 2026-03-08:
 
 IO device now starts on channel 8; press and turn dial to switch channel.
@@ -60,7 +68,7 @@ Add hardware.h, meant to replace Interface* pinout mess.
 
 Last night I got stalled out trying to add some channel-swapping behavior by the usual "int* p vs int p[k]" / "what is this a pointer to again?" / "maybe I can cheat here. nope, now it spouts gibberish for five seconds, then boots normally and works for a while, then an guy shows up in an Uber with a Hawiaiian pizza demanding I sign a $1000 reciept." business.
 
-Only in C++, man. It's like, if we can't get proper closures AND we can't pass a fixed-size array without carefully stepping over various unlabeled trap-doors to Wonderland then what are we even *doing* in this neighborhood? 
+Only in C++, man. It's like, if we can't get proper closures AND we can't pass a fixed-size array without carefully stepping over various unlabeled trap-doors to Wonderland then what are we even *doing* in this neighborhood?
 
 After extensive back-and-forth with the bot (more proposals of new levels of containers and abstract classes, and me saying "no std in arduino" for what feels like the nth time) I've decided the right way forward is to abandon the "yeah, we'll find a pinout somewhere, trust me" laissez faire of Interface* pinout for the strict constructor discipline of const Hardware& hardware; and dealing with it explicitly in every constructor. (Only in C++...)
 
@@ -128,7 +136,7 @@ Beyond that, if I can rename the classes and then get the local client working o
 
 --
 
-Fix miscellaneous bugs (with assist from chatbot). 
+Fix miscellaneous bugs (with assist from chatbot).
 
 After pushing the change above I pasted the diff into the AI, and modulo some formatting-based nonsense (can I view the diff raw, or do they hide that?) it was like, "Fix these three bugs (off-by-one; zombie debugging code; just fine, as it figured out mid-explanation) and this spelling error." (except after C, indeed...) And just like it said on the tin, after dealing with the things it instantly listed out for me, the demo went from "does something possibly interesting" to "boringly does what I wanted".
 
@@ -183,7 +191,7 @@ Also fixed another silly error in a previously-disused codepath. (They don't eve
 
 I added a 'using' declaration to turn a bunch of visual clutter into a word, except where C++ made that difficult for me. (https://chatgpt.com/share/6998ac1d-c3e8-8012-9a14-e79c23442880)
 
-9: Remove CharDisplay/CharDevice and associated demos; organize demos. 
+9: Remove CharDisplay/CharDevice and associated demos; organize demos.
 
 8: Add a class called Display that splits a string across a handful of screens and keeps them refreshed.
 
@@ -253,5 +261,3 @@ I'm uploading onir to github because there's enough of it that it seems worth st
 I haven't successfully used AI for programming so far. I tried giving one of my old graph-traversal questions to ChatGPT shortly after its public release and was impressed at how readily it spat out what looked like working Python and C++ solutions. But it seemed to get lost when I tried it with anything bigger, and to have very different instincts than me when it came to how to break things up. And I didn't have any programs to write that I couldn't quickly bang out by hand anyway, so I deferred.
 
 But I keep hearing that recent improvements have been impressive. Here I have a chunk of code that should be enough to generalize from. And I have other things to get done this week. So I thought I'd give it another shot.
-
-

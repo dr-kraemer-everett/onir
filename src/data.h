@@ -53,16 +53,16 @@ struct Message {
 };
 
 struct Motion {  // TODO: remove default ctor; require a motor(function).
-  Function motor = Function::NONE;
+  Function motor = Function::none;
   operator bool() const {
-    return motor != Function::NONE;
+    return motor != Function::none;
   }
 
   s_small pitch = 0;
   u_small winks = 10;  // try for a second
 
   void clear() {
-    motor = Function::NONE;
+    motor = Function::none;
     pitch = 0;
     winks = 0;
   }
@@ -102,7 +102,7 @@ inline bool is_motor(Cue cue) {
   return (i >= (int)Cue::stop and i <=(int)Cue::scan);
 }
 
-enum class Command : u_small {
+enum class Code : u_small {
   none,       //                                              0
   perform,    // showtime                                     1
 
@@ -119,45 +119,45 @@ enum class Command : u_small {
 
 };
 
-static inline bool imperative(const Command& command) {  // sensible request?
-  if (command == Command::none)    return false;
+static inline bool imperative(const Code& command) {  // sensible request?
+  if (command == Code::none)    return false;
 
-  if (command == Command::idle)    return false;
-  if (command == Command::reject)  return false;
-  if (command == Command::missing) return false;
-  if (command == Command::error)   return false;
+  if (command == Code::idle)    return false;
+  if (command == Code::reject)  return false;
+  if (command == Code::missing) return false;
+  if (command == Code::error)   return false;
 
   return true;
 }
 
 
 
-static inline bool performative(const Command& response) {  // need motor update?
-  if (response == Command::perform) return true;
-  if (response == Command::modify)  return true;
+static inline bool performative(const Code& response) {  // need motor update?
+  if (response == Code::perform) return true;
+  if (response == Code::modify)  return true;
   return false;
 }
 
-static inline bool responsive(const Command& command) {  // active response?
-  if (command == Command::none)    return false;
+static inline bool responsive(const Code& command) {  // active response?
+  if (command == Code::none)    return false;
 
-  if (command == Command::idle)    return true;
-  if (command == Command::missing) return true;
-  if (command == Command::reject)  return true;
-  if (command == Command::error)   return true;
+  if (command == Code::idle)    return true;
+  if (command == Code::missing) return true;
+  if (command == Code::reject)  return true;
+  if (command == Code::error)   return true;
 
   return false;
 }
 
-static bool informative(const Command& response) {  // valid response?
-  return response != Command::none;
+static bool informative(const Code& response) {  // valid response?
+  return response != Code::none;
 }
 
 struct Interaction;
 
 struct Instruction {
-  Command command = Command::none;    // boss to driver
-  Command respond = Command::none;    // driver to boss
+  Code command = Code::none;    // boss to driver
+  Code respond = Code::none;    // driver to boss
 
   // response codes:
   //
@@ -215,8 +215,8 @@ struct Instruction {
 
 struct Loop {
 // same first two elements as Instruction; can be read from driver alone.
-  Command command = Command::none;    // boss to driver
-  Command respond = Command::none;    // driver to boss
+  Code command = Code::none;    // boss to driver
+  Code respond = Code::none;    // driver to boss
 
   Loop() { }
   Loop(Instruction instruction) :
@@ -230,11 +230,11 @@ struct Loop {
 };
 
 static inline bool empty(const Loop& todo) {
-  return todo.command == Command::none and todo.respond == Command::none;
+  return todo.command == Code::none and todo.respond == Code::none;
 }
 
 static inline bool idled(const Loop& todo) {
-  return todo.command == Command::none and todo.respond == Command::idle;
+  return todo.command == Code::none and todo.respond == Code::idle;
 }
 
 static inline bool failed(const Loop& todo) {
@@ -243,27 +243,27 @@ static inline bool failed(const Loop& todo) {
 }
 
 static inline bool rejected(const Loop& todo) {
-  return todo.respond == Command::reject;
+  return todo.respond == Code::reject;
 }
 
 static inline bool performed(const Loop& todo) {
-  return todo.command == Command::none and todo.respond == Command::perform;
+  return todo.command == Code::none and todo.respond == Code::perform;
 }
 
 static inline bool modified(const Loop& todo) {
-  return todo.command == Command::none and todo.respond == Command::modify;
+  return todo.command == Code::none and todo.respond == Code::modify;
 }
 
 static inline bool copied(const Loop& todo) {
-  return todo.command == Command::none and todo.respond == Command::copy;
+  return todo.command == Code::none and todo.respond == Code::copy;
 }
 
 static inline bool forgotten(const Loop& todo) {
-  return todo.command == Command::none and todo.respond == Command::forget;
+  return todo.command == Code::none and todo.respond == Code::forget;
 }
 
 static inline bool succeeded(const Loop& todo) {
-  return todo.command == Command::none and imperative(todo.respond);
+  return todo.command == Code::none and imperative(todo.respond);
 }
 
 static inline bool completed(const Loop& todo) {
@@ -271,78 +271,78 @@ static inline bool completed(const Loop& todo) {
 }
 
 static inline Instruction& perform(Instruction& todo) {
-  todo.command = Command::perform;
-  todo.respond = Command::none;
+  todo.command = Code::perform;
+  todo.respond = Code::none;
   return todo;
 }
 
 static inline Instruction& modify(Instruction& todo) {
-  todo.command = Command::modify;
-  todo.respond = Command::none;
+  todo.command = Code::modify;
+  todo.respond = Code::none;
   return todo;
 }
 
 static inline Instruction& copy(Instruction& todo) {
-  todo.command = Command::copy;
-  todo.respond = Command::none;
+  todo.command = Code::copy;
+  todo.respond = Code::none;
   return todo;
 }
 
 static inline Instruction& forget(Instruction& todo) {
-  todo.command = Command::forget;
-  todo.respond = Command::none;
+  todo.command = Code::forget;
+  todo.respond = Code::none;
   return todo;
 }
 
-static inline Command& sign_modified(Instruction& todo) {
-  todo.command = Command::none;
-  todo.respond = Command::modify;
+static inline Code& sign_modified(Instruction& todo) {
+  todo.command = Code::none;
+  todo.respond = Code::modify;
   return todo.respond;
 }
 
 // sensible request, but no action was needed.
-static Command idle(Instruction& todo) {
-  todo.respond = Command::idle;
-  todo.command = Command::none;  // TODO: set rate-limit flag values here
+static Code idle(Instruction& todo) {
+  todo.respond = Code::idle;
+  todo.command = Code::none;  // TODO: set rate-limit flag values here
   return todo.command;
 }
 
 // return response value; let go of todo unaltered.
-static Command& release(Instruction& todo, Command response) {
+static Code& release(Instruction& todo, Code response) {
   return response;
 }
 
 // let go of todo unaltered.
-static Command& release(Instruction& todo) {
+static Code& release(Instruction& todo) {
   return todo.respond;
 }
 
 // set and return response field from response; release instruction.
-static Command& mark(Instruction& todo, Command response) {
+static Code& mark(Instruction& todo, Code response) {
   todo.respond = response;
   return release(todo);
 }
 
-static Command& apply(Command response, Instruction& todo) {
+static Code& apply(Code response, Instruction& todo) {
   return mark(todo, response);
 }
 
-static Command& reject(Instruction& todo) {
-  todo.respond = Command::reject;
+static Code& reject(Instruction& todo) {
+  todo.respond = Code::reject;
   return todo.respond;
 }
 
-static Command& missing(Instruction& todo) {
-  todo.respond = Command::missing;
+static Code& missing(Instruction& todo) {
+  todo.respond = Code::missing;
   return todo.respond;
 }
 
-static Command& error(Instruction& todo) {
-  todo.respond = Command::error;
+static Code& error(Instruction& todo) {
+  todo.respond = Code::error;
   return todo.respond;
 }
 
-static Command& sign(Instruction& todo) {
+static Code& sign(Instruction& todo) {
   if (not informative(todo.command)) {
     return release(todo);                // nothing to do yet.
   }
@@ -354,11 +354,11 @@ static Command& sign(Instruction& todo) {
   if (not informative(todo.respond)) {  // logic error -- needed to sign.
     return error(todo);
   }
-  todo.command = Command::none;
+  todo.command = Code::none;
   return release(todo);
 }
 
-static Command sign(Instruction& todo, Command response) {
+static Code sign(Instruction& todo, Code response) {
   todo.respond = response;
   return sign(todo);
 }

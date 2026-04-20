@@ -19,51 +19,51 @@ const extern int max_channel;
 // names for logical pin functions.
 
 enum class Function : u_small {
-  NONE,  // default
+  none,  // default
 
   // power pair
-  GROUND,
-  VCC,
+  ground,
+  vcc,
 
   // dial
-  CLOCK,
-  DATA,
-  SWITCH,
+  clock,
+  data,
+  switch_,
 
-  CLOCK_2,
-  DATA_2,
-  SWITCH_2,
+  clock_2,
+  data_2,
+  switch_2,
 
   // motor names
-  MOTOR_MAIN,
-  MOTOR_L_WHEEL,
-  MOTOR_R_WHEEL,
-  MOTOR_BASE,
-  MOTOR_SHOULDER,
-  MOTOR_ELBOW,
-  MOTOR_WRIST,
-  MOTOR_HAND,
-  MOTOR_END,
+  motor_main,
+  motor_l_wheel,
+  motor_r_wheel,
+  motor_base,
+  motor_shoulder,
+  motor_elbow,
+  motor_wrist,
+  motor_hand,
+  motor_end,
 
   // seven segment digit display outputs
 
   // segments (anode)
-  DD_A,
-  DD_B,
-  DD_C,
-  DD_D,
-  DD_E,
-  DD_F,
-  DD_G,
-  DD_P,
+  dd_a,
+  dd_b,
+  dd_c,
+  dd_d,
+  dd_e,
+  dd_f,
+  dd_g,
+  dd_p,
 
   // positions (cathode)
-  DD_1,
-  DD_2,
-  DD_3,
-  DD_4,
+  dd_1,
+  dd_2,
+  dd_3,
+  dd_4,
 
-  COUNT,  // last item used for size
+  count,  // last iteml used for size
 
 };
 
@@ -74,17 +74,17 @@ inline Function& operator++(Function& fn) {
 }
 
 inline bool dys(Function& fn) {
-  if (fn == Function::NONE) return true;
-  if (fn == Function::COUNT) return true;
+  if (fn == Function::none) return true;
+  if (fn == Function::count) return true;
   return false;
 }
 
 inline bool is_motor(Function& fn) {
   int i = (int)fn;
-  return (i >= (int)Function::MOTOR_MAIN and i <=(int)Function::MOTOR_END);
+  return (i >= (int)Function::motor_main and i <=(int)Function::motor_end);
 }
 
-using Hardware = int[(int)Function::COUNT];
+using Hardware = int[(int)Function::count];
 extern const Hardware no_hardware;
 extern const int hardware_size;
 
@@ -105,7 +105,7 @@ void power(const Hardware&);
 
 template <typename T>
 struct Resource {
-  T hardware[(int)Function::COUNT] { };
+  T hardware[(int)Function::count] { };
 
   T& operator[](Function f) {
     return hardware[(int)f];

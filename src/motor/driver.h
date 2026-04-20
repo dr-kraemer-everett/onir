@@ -9,11 +9,11 @@ public:
   Driver(Machine&);
   Driver(const Hardware&);
 
-  static Command drive(Machine&, Program&);
-  Command follow(Instruction& todo);
+  static Code drive(Machine&, Program&);
+  Code follow(Instruction& todo);
 
-  Command drive();
-  Command update();
+  Code drive();
+  Code update();
 
 private:
 

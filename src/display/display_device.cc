@@ -5,14 +5,14 @@
 
 DisplayDevice::DisplayDevice(const Hardware& hardware) : hardware(hardware) {
   for (int i = 0; i < 7; i++) {
-    segments[i] = (Function)(i + (int)Fn::DD_A);
+    segments[i] = (Function)(i + (int)Fn::dd_a);
   }
   for (int i = 0; i < 4; i++) {
-    positions[i] = (Function)(i + (int)Fn::DD_1);
+    positions[i] = (Function)(i + (int)Fn::dd_1);
   }
   set_segment_masks();
   set_char_masks();
-  for (int i = (int)Function::DD_A; i <= (int)Function::DD_4; i++) {
+  for (int i = (int)Function::dd_a; i <= (int)Function::dd_4; i++) {
     pinMode(dispatch(hardware, (Function)i), OUTPUT);
   }
   message.clear();
@@ -46,7 +46,7 @@ void DisplayDevice::pin_low(Function fn) {
 }
 
 void DisplayDevice::set_point_pin(bool val) {
-  set_fn_pin(Fn::DD_P, val);
+  set_fn_pin(Fn::dd_p, val);
 }
 
 void DisplayDevice::refresh() {

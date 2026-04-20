@@ -36,10 +36,10 @@ struct Joint {
   bool write();
 
   Trimmer* trimmer = 0;
-  Command drive(Instruction&);
+  Code drive(Instruction&);
 };
 
-static Command control(Joint* joint, Motion motion);
+static Code control(Joint* joint, Motion motion);
 
 static bool stop_seek(Joint* joint);
 static bool stop_spin(Joint* joint);
@@ -58,8 +58,8 @@ public:
 
   void release(Function joint);
   Function assign(const Operation&);
-  Command assign(const Motion*);
-  Command assign(const Motion&);
+  Code assign(const Motion*);
+  Code assign(const Motion&);
 
   int advance(Function joint);
   void advance();  // call in loop()

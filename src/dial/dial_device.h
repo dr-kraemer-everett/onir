@@ -18,9 +18,9 @@ private:
   bool data_pin() const;
   bool switch_pressed() const;
 
-  Function clock_fn = Function::CLOCK;
-  Function data_fn = Function::DATA;
-  Function switch_fn = Function::SWITCH;
+  Function clock_fn = Function::clock;
+  Function data_fn = Function::data;
+  Function switch_fn = Function::switch_;
 
   const Hardware& hardware;
 };

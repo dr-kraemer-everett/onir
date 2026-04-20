@@ -5,24 +5,24 @@ void uno_io(Hardware hardware) {
   clear(hardware);
 
   // digit display
-  assign(hardware, Fn::DD_A, 6);
-  assign(hardware, Fn::DD_B, 2);
-  assign(hardware, Fn::DD_C, 10);
-  assign(hardware, Fn::DD_D, 12);
-  assign(hardware, Fn::DD_E, 13);
-  assign(hardware, Fn::DD_F, 5);
-  assign(hardware, Fn::DD_G, 9);
-  assign(hardware, Fn::DD_P, 11);
-  assign(hardware, Fn::DD_1, 7);
-  assign(hardware, Fn::DD_2, 4);
-  assign(hardware, Fn::DD_3, 3);
-  assign(hardware, Fn::DD_4, 8);
+  assign(hardware, Fn::dd_a, 6);
+  assign(hardware, Fn::dd_b, 2);
+  assign(hardware, Fn::dd_c, 10);
+  assign(hardware, Fn::dd_d, 12);
+  assign(hardware, Fn::dd_e, 13);
+  assign(hardware, Fn::dd_f, 5);
+  assign(hardware, Fn::dd_g, 9);
+  assign(hardware, Fn::dd_p, 11);
+  assign(hardware, Fn::dd_1, 7);
+  assign(hardware, Fn::dd_2, 4);
+  assign(hardware, Fn::dd_3, 3);
+  assign(hardware, Fn::dd_4, 8);
 
   // dial encoder
 
-  assign(hardware, Fn::CLOCK, 17);   // A3
-  assign(hardware, Fn::DATA, 16);    // A2
-  assign(hardware, Fn::SWITCH, 15);  // A1
+  assign(hardware, Fn::clock, 17);   // A3
+  assign(hardware, Fn::data, 16);    // A2
+  assign(hardware, Fn::switch_, 15);  // A1
 
 }
 
@@ -30,22 +30,22 @@ void uno_car(Hardware hardware) {
 
   clear(hardware);
 
-  assign(hardware, Fn::MOTOR_R_WHEEL, 10);
-  assign(hardware, Fn::MOTOR_L_WHEEL, 12);
+  assign(hardware, Fn::motor_r_wheel, 10);
+  assign(hardware, Fn::motor_l_wheel, 12);
 
-  assign(hardware, Fn::CLOCK, 17);   // A3
-  assign(hardware, Fn::DATA, 16);    // A2
-  assign(hardware, Fn::SWITCH, 15);  // A1
+  assign(hardware, Fn::clock, 17);   // A3
+  assign(hardware, Fn::data, 16);    // A2
+  assign(hardware, Fn::switch_, 15);  // A1
 
-  assign(hardware, Fn::CLOCK_2, 3);
-  assign(hardware, Fn::DATA_2, 4);
-  assign(hardware, Fn::SWITCH_2, 5);
+  assign(hardware, Fn::clock_2, 3);
+  assign(hardware, Fn::data_2, 4);
+  assign(hardware, Fn::switch_2, 5);
 
-  assign(hardware, Fn::VCC, 6);
-  assign(hardware, Fn::GROUND, 7);
+  assign(hardware, Fn::vcc, 6);
+  assign(hardware, Fn::ground, 7);
 
   Hardware local {hardware};
-  assign(local, Fn::VCC, 6);
-  assign(local, Fn::GROUND, 7);
+  assign(local, Fn::vcc, 6);
+  assign(local, Fn::ground, 7);
   power(local);
 }

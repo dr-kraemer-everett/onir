@@ -17,8 +17,8 @@ Dial* dial_r{};
 void update_side(Dial* dial, Instruction& instruction) {
   if (dial->update() != instruction.reading) {
     instruction.reading = dial->reading;
-    instruction.command = Command::perform;
-    instruction.respond = Command::none;
+    instruction.command = Code::perform;
+    instruction.respond = Code::none;
     driver->follow(instruction);
     print_instruction(instruction);
   }
@@ -33,13 +33,13 @@ void setup() {
   dial_r->set_dial_2();
 
   // driving instructions
-  drive_l.command = Command::perform;
+  drive_l.command = Code::perform;
   drive_l.cue = Cue::drive;
   drive_l.reading.count = UNSET;
   drive_r = Instruction(drive_l);
 
-  drive_l.motion.motor = Function::MOTOR_L_WHEEL;
-  drive_r.motion.motor = Function::MOTOR_R_WHEEL;
+  drive_l.motion.motor = Function::motor_l_wheel;
+  drive_r.motion.motor = Function::motor_r_wheel;
 
   Serial.print("start loop (~");
   Serial.print(gamut<Instruction>());

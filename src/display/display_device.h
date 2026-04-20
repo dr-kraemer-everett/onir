@@ -31,15 +31,15 @@ private:
 
   Hardware segment_masks;
   int sm(char seg) {
-    return segment_masks[(int)Fn::DD_A + (int)seg - (int)'A'];
+    return segment_masks[(int)Fn::dd_a + (int)seg - (int)'A'];
   }
 
   void set_segment_masks() {
-    for (int i = 0; i < (int)Fn::COUNT; i++) {
+    for (int i = 0; i < (int)Fn::count; i++) {
       segment_masks[i] = 0;
     }
-    for (int i = (int)Fn::DD_A; i <= (int)Fn::DD_G; i++) {
-      segment_masks[i] = 1 << ((int)Fn::DD_G - i);
+    for (int i = (int)Fn::dd_a; i <= (int)Fn::dd_g; i++) {
+      segment_masks[i] = 1 << ((int)Fn::dd_g - i);
     }
   }
 

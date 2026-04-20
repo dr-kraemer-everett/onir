@@ -11,10 +11,10 @@ public:
     return cue != Cue::none;
   }
 
-  Command extend(const Instruction& todo);   // update from todo.motion
-  Command extend();                          // update from Action::motion
+  Code extend(const Instruction& todo);   // update from todo.motion
+  Code extend();                          // update from Action::motion
 
-  Motion* motions[(int)Function::COUNT] = { };
+  Motion* motions[(int)Function::count] = { };
   Motion*& operator[](Function fn) {
     return motions[(int)fn];
   }

@@ -92,7 +92,7 @@ void Dial::set_switch(Function fn) {
 }
 
 void Dial::set_dial_2() {
-  set_clock(Function::CLOCK_2);
-  set_data(Function::DATA_2);
-  set_switch(Function::SWITCH_2);
+  set_clock(Function::clock_2);
+  set_data(Function::data_2);
+  set_switch(Function::switch_2);
 }

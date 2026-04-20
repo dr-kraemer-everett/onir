@@ -32,7 +32,7 @@ bool Joint::write() {
   return true;
 }
 
-Command Joint::drive(Instruction& todo) {
+Code Joint::drive(Instruction& todo) {
   return trimmer->execute(todo);
 }
 
@@ -59,7 +59,7 @@ Joint* Machine::engage(Function function, Target target, s_small pitch) {
 }
 
 void Machine::engage_hardware(Target target) {
-  for (Function motor = Function::MOTOR_MAIN; motor < Function::MOTOR_END; motor++) {
+  for (Function motor = Function::motor_main; motor < Function::motor_end; motor++) {
     if (dispatch(hardware, motor) != UNSET) {
       Serial.print("engage motor ");
       Serial.println((int)motor);
@@ -80,8 +80,8 @@ void Machine::release(Function function) {
   }
 }
 
-static Command control(Joint* joint, Motion motion) {
-  if (not joint) return Command::missing;
+static Code control(Joint* joint, Motion motion) {
+  if (not joint) return Code::missing;
 
   joint->target_usec = servo_pulse(motion.pitch);
   if (LOG_SERVO_CHANGE) {
@@ -89,19 +89,19 @@ static Command control(Joint* joint, Motion motion) {
     Serial.println(joint->target_usec);
   }
   joint->end_millis = end_millis(motion.winks);
-  return Command::modify;
+  return Code::perform;
 }
 
 static void Machine::answer(Function* answer, Function query, Function update) {
-  if (*answer == Function::NONE or update == query)
+  if (*answer == Function::none or update == query)
     *answer = update;  // query motion or first activated
 }
 
-static Command Machine::assign(const Motion* motion) {
-  return motion ? assign(*motion) : Command::reject;
+static Code Machine::assign(const Motion* motion) {
+  return motion ? assign(*motion) : Code::reject;
 }
 
-static Command Machine::assign(const Motion& motion) {
+static Code Machine::assign(const Motion& motion) {
   return control(joints[motion.motor], motion);
 }
 
@@ -110,7 +110,7 @@ Function Machine::assign(const Operation& operation) {
   Function query = operation.motion.motor;
   Function response {};
   for (const Motion* motion : operation.motions) {
-    Command result = assign(motion);
+    Code result = assign(motion);
     bool outcome = performative(result);
     if (true) {
       answer(&response, query, motion->motor);
@@ -131,7 +131,7 @@ int Machine::advance(Function function) {
 }
 
 void Machine::advance() {
-  for (Function fn = Function::MOTOR_MAIN; fn < Function::MOTOR_END; fn++) {
+  for (Function fn = Function::motor_main; fn < Function::motor_end; fn++) {
     advance(fn);
   }
 }
@@ -149,7 +149,7 @@ int Machine::slam(Function function) {
 }
 
 void Machine::halt() {
-  for (Function fn = Function::MOTOR_MAIN; fn < Function::MOTOR_END; fn++) {
+  for (Function fn = Function::motor_main; fn < Function::motor_end; fn++) {
     halt(fn);
   }
 }

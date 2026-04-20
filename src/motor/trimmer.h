@@ -9,7 +9,7 @@ public:
   s_small pitch();
 
   // checks and handles correctly-addressed instructions
-  Command execute(Instruction& todo);
+  Code execute(Instruction& todo);
 
 private:
 

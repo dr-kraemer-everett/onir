@@ -16,7 +16,7 @@ Link::Link(Link* link ) {
 }
 
 Panel::Panel(const Hardware& hardware) {
-  for (Function fn = Function::MOTOR_MAIN; fn < Function::MOTOR_END; fn++) {
+  for (Function fn = Function::motor_main; fn < Function::motor_end; fn++) {
     if (is_set(hardware, fn)) {
       Serial.println((int)fn);
       Link*& link = operator[](fn);
@@ -49,22 +49,21 @@ Stem::Stem(Dial* l, Dial* r) {
 }
 
 void Control::init() {
-  for (Function fn = Function::MOTOR_MAIN; fn < Function::MOTOR_END; fn++) {
+  for (Function fn = Function::motor_main; fn < Function::motor_end; fn++) {
     Link* link = panel[fn];
     if (link) {
-      if (fn == Function::MOTOR_R_WHEEL) {
-        Serial.println("Dial 2");
+      if (fn == Function::motor_r_wheel) {
         link->dial->set_dial_2();
       }
       Instruction& todo = link->instruction;
       todo.channel = channel;
-      todo.command = Command::modify;
+      todo.command = Code::modify;
       todo.cue = Cue::drive;
     }
   }
 }
 
-Control::Control(int channel, Stem& stem) :  channel(channel) {
+Control::Control(int channel, Stem& stem) :  channel(channel), panel(stem) {
   init();
 }
 
@@ -87,12 +86,11 @@ static int Control::read_instruction(int channel, Instruction* buffer) {
   Wire.requestFrom(channel, sizeof(Instruction));
   if (Wire.available() == sizeof(Loop)) {
     Wire.readBytes((char*)buffer, sizeof(Loop));  // prefix read
-    return sizeof(Instruction);
+    return sizeof(Loop);
 
   } else if (Wire.available() == sizeof(Instruction)) {
     Wire.readBytes((char*)buffer, sizeof(Instruction));
     if (CONTROL_LOG) {
-      Serial.print("incoming:  ");
       print_instruction(*buffer);
     }
     return sizeof(Instruction);
@@ -154,24 +152,22 @@ bool Control::update_link(Link* link) {
       Serial.println("driver error?");
     }
     todo.reading = link->dial->reading;
-    if (todo.command == Command::none) {
-      todo.command = Command::perform;
+    if (todo.command == Code::none) {
+      todo.command = Code::perform;
     }
-    todo.respond = Command::none;
+    todo.respond = Code::none;
     Wire.beginTransmission(channel);
     Wire.write((char*)&todo, sizeof(Instruction));
     Wire.endTransmission(channel);
     update_panel(todo, panel);
-    if (CONTROL_LOG) {
-      Serial.print("outgoing: ");
-      print_instruction(todo);
-    }
+    return true;
   }
+  return false;
 }
 
-Command Control::update() {
+Code Control::update() {
 //  Serial.println(millis());
-  for (Function fn = Function::MOTOR_MAIN; fn < Function::MOTOR_END; fn++) {
+  for (Function fn = Function::motor_main; fn < Function::motor_end; fn++) {
     update_link(panel[fn]);
   }
 }

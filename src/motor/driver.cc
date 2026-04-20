@@ -23,7 +23,7 @@ void Driver::init() {
   program[Cue::stop] = stop;
   program[Cue::go] = go;
 
-  for (Function motor = Function::MOTOR_MAIN; motor < Function::MOTOR_END; motor++) {
+  for (Function motor = Function::motor_main; motor < Function::motor_end; motor++) {
     Motion* halt =  new Motion();
     halt->motor = motor;
     (*stop)[motor] = halt;
@@ -35,7 +35,7 @@ void Driver::init() {
   }
 }
 
-static Command Driver::drive(Machine& machine, Program& program) {
+static Code Driver::drive(Machine& machine, Program& program) {
   Instruction& todo = program.instruction;
   if (not todo) {
     return sign(todo);                            // nothing to do.
@@ -54,10 +54,10 @@ static Command Driver::drive(Machine& machine, Program& program) {
     return missing(todo);                         // don't have one of those
   }
 
-  Command& command = todo.command;
+  Code& command = todo.command;
   Cue cue = todo.cue;
 
-  if (command == Command::perform or command == Command::modify) {
+  if (command == Code::perform or command == Code::modify) {
     if (cue == Cue::none) {
       if (not motion) {
         return reject(todo);                    // nothing to perform/modify
@@ -73,7 +73,7 @@ static Command Driver::drive(Machine& machine, Program& program) {
 
       if (not joint->trimmer) zero(joint, program);           // set up trimmer
 
-      if (performative(joint->drive(todo)) and command == Command::perform) {
+      if (performative(joint->drive(todo)) and command == Code::perform) {
         return sign(todo, machine.assign(todo.motion));       // activate joint
       }
 
@@ -98,7 +98,7 @@ static Command Driver::drive(Machine& machine, Program& program) {
     return sign(todo);
   }
 
-  if (command == Command::copy) {
+  if (command == Code::copy) {
     Cue direction = todo.direction;
     todo.direction = Cue::none;
     program[direction] = new Operation(todo);
@@ -107,15 +107,15 @@ static Command Driver::drive(Machine& machine, Program& program) {
   return error(todo);
 }
 
-Command Driver::follow(Instruction& todo) {
+Code Driver::follow(Instruction& todo) {
   program.instruction = todo;
-  Command result = drive();
+  Code result = drive();
   todo = program.instruction;
   return result;
 }
 
-Command Driver::drive() {
-  Command response { };
+Code Driver::drive() {
+  Code response { };
   if (program) {
     drive(machine, program);
   }
