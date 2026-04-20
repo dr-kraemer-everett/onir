@@ -1,10 +1,7 @@
 #include "Wire.h"
 
 #include "circuits.h"
-
-#include "data.h"
 #include "motor/control.h"
-
 #include "log.h"
 
 Hardware hardware = {};
@@ -14,13 +11,11 @@ const int channel = 0x09;
 
 void setup() {
   Serial.begin(9600);
+  Serial.println("begin");
   uno_car(hardware);
-  power(hardware);
   Wire.begin();  // client mode
   control = new Control(channel, hardware);
-  Serial.print("start loop (~");
-  Serial.print(gamut<Instruction>());
-  Serial.println(" free):");
+  memcheck();
 }
 
 void loop() {

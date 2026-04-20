@@ -11,12 +11,17 @@ Driver* driver{};
 
 Instruction instruction{};
 
-void on_receive(int message_size) {
+void take_instruction(int message_size) {
   Wire.readBytes((byte*)&instruction, sizeof(Instruction));
 }
 
-void on_request() {
-  Wire.write((byte*)&instruction, sizeof(Instruction));
+void send_outcome() {
+  if (empty(instruction)  // nothing yet
+      or instruction) {   // still working
+    Wire.write((const byte*)&instruction, sizeof(Loop));
+  } else {
+    Wire.write((const byte*)&instruction, sizeof(Instruction));
+  }
 }
 
 const int channel = 0x09;
@@ -30,8 +35,8 @@ void setup() {
   Serial.print(channel);
 
   Wire.begin(channel);
-  Wire.onReceive(on_receive);
-  Wire.onRequest(on_request);
+  Wire.onReceive(take_instruction);
+  Wire.onRequest(send_outcome);
 
   Serial.print("start (~");
   Serial.print(gamut<Instruction>());

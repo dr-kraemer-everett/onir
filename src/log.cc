@@ -158,3 +158,11 @@ void log_io(Unit* unit) {
   mirror_device_units(unit);
   print_todo(unit->local_);
 }
+
+int memcheck() {
+  Serial.print("start loop (~");
+  int mem = gamut<Instruction>();
+  Serial.print(mem);
+  Serial.println(" free):");
+  return mem;
+}

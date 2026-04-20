@@ -19,6 +19,7 @@ enum class Target : u_small {
 };
 
 class Trimmer;
+class Servo;
 
 struct Joint {
   int pulse_usec = UNSET;
@@ -43,8 +44,6 @@ static Command control(Joint* joint, Motion motion);
 static bool stop_seek(Joint* joint);
 static bool stop_spin(Joint* joint);
 static bool hold(Joint* joint);
-
-class Servo;
 
 class Machine {
 public:

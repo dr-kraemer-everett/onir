@@ -1,21 +1,7 @@
 #pragma once
 
 #include "data.h"
-#include "operation.h"
 #include "dial/dial.h"
-
-struct Stem {  // a pair of dials (ideally mounted co-axially)
-  Dial* left { };
-  Dial* right { };
-
-  operator bool() const {
-    return left and right;
-  }
-
-  Stem() { };
-  Stem(Dial* left, Dial* right) : left(left), right(right) { };
-  Stem(const Hardware& hardware);
-};
 
 struct Link {
   Dial* dial { };
@@ -28,7 +14,39 @@ struct Link {
   Link() { };
   Link(const Hardware&);
   Link(Dial*);
+  Link(Link*);
+};
 
+class Panel {
+public:
+  Panel() { }
+  Panel(const Hardware&);
+
+  Link*& operator[](Function fn) {
+    return dials[(int)fn];
+  }
+protected:
+  Link* dials[(int)Function::COUNT] = { };
+};
+
+class Stem : public Panel {  // a pair of linked dials (ideally mounted co-axially)
+public:
+
+  Link*& left();
+  Link*& right();
+
+  operator bool() const {
+    return left()->dial and right()->dial;
+  }
+
+  Stem() { };
+  Stem(Dial* left, Dial* right);
+  Stem(const Hardware& hardware);
+
+private:
+  init();
+  Function fn_left =  Function::MOTOR_L_WHEEL;
+  Function fn_right = Function::MOTOR_R_WHEEL;
 };
 
 class Control {
@@ -39,17 +57,15 @@ public:
   Command update();
 
 private:
-  void init();
-  void Control::print_new(const Instruction&, Instruction& prior);
-
-  static const void read_link(Link&);
-  static const void write_link(Link&);
-  static const Instruction& update_link(Link&);
-  Instruction left_prior { };
-  Instruction right_prior { };
-
   const int channel;
+  void init();
 
-  Link left;
-  Link right;
+  bool debrief_driver();
+
+  bool update_link(Link*);
+
+  static bool update_panel(const Instruction& incoming, Panel& panel);
+  static void clear_device(int channel);
+  static int read_instruction(int channel, Instruction* buffer);
+  Panel panel { };
 };

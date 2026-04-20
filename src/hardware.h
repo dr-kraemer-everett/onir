@@ -67,24 +67,22 @@ enum class Function : u_small {
 
 };
 
-inline bool dys(Function& fn) {
-  if (fn == Function::NONE) return false;
-  if (fn == Function::COUNT) return false;
-  return true;
-}
-
-inline bool is_motor(Function& fn) {
-  int i = (int)fn;
-  return (i >= (int)Function::MOTOR_MAIN and i <=(int)Function::MOTOR_END);
-}
-
 inline Function& operator++(Function& fn) {
   Function ret = fn;
   fn = (Function)((int)fn + 1);
   return ret;
 }
 
-class Servo;
+inline bool dys(Function& fn) {
+  if (fn == Function::NONE) return true;
+  if (fn == Function::COUNT) return true;
+  return false;
+}
+
+inline bool is_motor(Function& fn) {
+  int i = (int)fn;
+  return (i >= (int)Function::MOTOR_MAIN and i <=(int)Function::MOTOR_END);
+}
 
 using Hardware = int[(int)Function::COUNT];
 extern const Hardware no_hardware;

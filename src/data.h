@@ -153,9 +153,9 @@ static bool informative(const Command& response) {  // valid response?
   return response != Command::none;
 }
 
-struct Instruction {
-  s_small channel = UNSET;
+struct Interaction;
 
+struct Instruction {
   Command command = Command::none;    // boss to driver
   Command respond = Command::none;    // driver to boss
 
@@ -205,6 +205,7 @@ struct Instruction {
 
   Instruction* next = 0;      // next intruction; if none, try direction
   Cue direction = Cue::none;
+  s_small channel = UNSET;
 
   void clear() {
     Instruction blank;
@@ -212,38 +213,61 @@ struct Instruction {
   }
 };
 
-static inline bool blank(const Instruction& todo) {
+struct Loop {
+// same first two elements as Instruction; can be read from driver alone.
+  Command command = Command::none;    // boss to driver
+  Command respond = Command::none;    // driver to boss
+
+  Loop() { }
+  Loop(Instruction instruction) :
+    command(instruction.command), respond(instruction.respond) { }
+
+  Instruction& update(Instruction& instruction) {
+    instruction.command = command;
+    instruction.respond = respond;
+    return instruction;
+  }
+};
+
+static inline bool empty(const Loop& todo) {
   return todo.command == Command::none and todo.respond == Command::none;
 }
 
-static inline bool rejected(const Instruction& todo) {
-  return todo.command == Command::reject;
+static inline bool idled(const Loop& todo) {
+  return todo.command == Command::none and todo.respond == Command::idle;
 }
 
-static inline bool performed(const Instruction& todo) {
+static inline bool failed(const Loop& todo) {
+  if (idled(todo)) return false;
+  return responsive(todo.respond);
+}
+
+static inline bool rejected(const Loop& todo) {
+  return todo.respond == Command::reject;
+}
+
+static inline bool performed(const Loop& todo) {
   return todo.command == Command::none and todo.respond == Command::perform;
 }
 
-static inline bool modified(const Instruction& todo) {
+static inline bool modified(const Loop& todo) {
   return todo.command == Command::none and todo.respond == Command::modify;
 }
 
-static inline bool copied(const Instruction& todo) {
+static inline bool copied(const Loop& todo) {
   return todo.command == Command::none and todo.respond == Command::copy;
 }
 
-static inline bool forgotten(const Instruction& todo) {
+static inline bool forgotten(const Loop& todo) {
   return todo.command == Command::none and todo.respond == Command::forget;
 }
 
-static inline bool succeeded(const Instruction& todo) {
-  return todo.respond == Command::none and imperative(todo.respond);
+static inline bool succeeded(const Loop& todo) {
+  return todo.command == Command::none and imperative(todo.respond);
 }
 
-static inline bool idled(const Instruction& todo) {
-
-  return ((todo.command == Command::none or todo.command == Command::idle) and
-          todo.respond == Command::idle);
+static inline bool completed(const Loop& todo) {
+  return succeeded(todo) or idled(todo);
 }
 
 static inline Instruction& perform(Instruction& todo) {
@@ -281,10 +305,6 @@ static Command idle(Instruction& todo) {
   todo.respond = Command::idle;
   todo.command = Command::none;  // TODO: set rate-limit flag values here
   return todo.command;
-}
-
-static inline bool completed(const Instruction& todo) {
-  return succeeded(todo) or idled(todo);
 }
 
 // return response value; let go of todo unaltered.

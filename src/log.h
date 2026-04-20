@@ -16,3 +16,4 @@ class Unit;
 void log_io(Unit* unit);
 
 extern int log_winks;
+int memcheck();
