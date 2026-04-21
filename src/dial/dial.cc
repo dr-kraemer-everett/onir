@@ -3,7 +3,6 @@
 
 #include "util.h"
 
-#include "Arduino.h"
 #include "Wire.h"
 
 Dial::Dial(const Hardware& hardware) {

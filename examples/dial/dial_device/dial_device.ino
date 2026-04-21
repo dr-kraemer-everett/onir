@@ -1,19 +1,17 @@
 #include "Wire.h"
 
-#include "onir.h"
-#include "dial/dial_device.h"
+#include "channel.h"
 #include "circuits.h"
+#include "log.h"
+
+#include "dial/dial_device.h"
 
 DialDevice* dial;
-Reading reading;
+Hardware hardware {};
+const int channel = number(Channel::dial);
 
-Hardware hardware = {};
-
-const int I2C_ADDRESS = 8;
-
-long count = 0;
-long down_count = 0;
-bool button = false;
+Reading reading {};
+Reading prior {};
 
 void on_request() {
   Wire.write((byte*)&reading, sizeof(Reading));
@@ -26,21 +24,18 @@ void setup() {
   uno_io(hardware);
   dial = new DialDevice(hardware);
 
-  Serial.print("i2c address: ");
-  Serial.println(I2C_ADDRESS);
+  Serial.print("I2C channel ");
+  Serial.println(channel);
 
-  Wire.begin(I2C_ADDRESS);
+  Wire.begin(channel);
   Wire.onRequest(on_request);
 }
 
 void loop() {
   dial->take(reading);
-  if (reading.count != count || reading.down_count != down_count || reading.button != button) {
-    Serial.print("c: ");
-    Serial.print(count = reading.count);
-    Serial.print(" d: ");
-    Serial.print(down_count = reading.down_count);
-    Serial.print(" b: ");
-    Serial.println(button = reading.button = reading.button);
+//  if (reading.count != count || reading.down_count != down_count || reading.button != button) {
+  if (reading != prior) {
+    prior = reading;
+    print_reading(reading);
   }
 }

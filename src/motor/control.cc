@@ -2,6 +2,8 @@
 #include "Wire.h"
 
 #include "control.h"
+
+#include "dial/dial.h"
 #include "log.h"
 
 #define CONTROL_LOG true
@@ -143,7 +145,6 @@ bool Control::debrief_driver() {
 }
 
 bool Control::update_link(Link* link) {
-
   if (not link) return false;
   link->dial->update();
   Instruction& todo = link->instruction;
@@ -165,9 +166,10 @@ bool Control::update_link(Link* link) {
   return false;
 }
 
-Code Control::update() {
-//  Serial.println(millis());
+bool Control::update() {
+  bool updated = false;
   for (Function fn = Function::motor_main; fn < Function::motor_end; fn++) {
-    update_link(panel[fn]);
+    updated = update_link(panel[fn]) or updated;
   }
+  return updated;
 }

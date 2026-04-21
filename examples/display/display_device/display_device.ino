@@ -1,8 +1,9 @@
-#include "circuits.h"
-#include "display/display_device.h"
-#include "hardware.h"
-
 #include "Wire.h"
+
+#include "channel.h"
+#include "circuits.h"
+
+#include "display/display_device.h"
 
 DisplayDevice* display;
 Hardware hardware = { };
@@ -17,7 +18,7 @@ void setup() {
   uno_io(hardware);
   display = new DisplayDevice(hardware);
 
-  Wire.begin(DISPLAY_DEVICE_CHANNEL);
+  Wire.begin(number(Channel::display));
   Wire.onReceive(update_display);
 }
 

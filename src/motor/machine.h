@@ -1,6 +1,5 @@
 #pragma once
 
-#include "timing.h"
 #include "motor/program.h"
 
 const extern int PULSE_NEUTRAL;

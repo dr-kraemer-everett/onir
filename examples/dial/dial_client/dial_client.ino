@@ -1,38 +1,29 @@
 #include "Wire.h"
 
-#include "onir.h"
+#include "data.h"
+#include "channel.h"
+#include "log.h"
 #include "dial/dial.h"
 
 Dial* dial;
+Reading prior{};
 
-const int address = 8;
+const int channel = number(Channel::dial);
 
 void setup() {
   Serial.begin(9600);
-  Serial.println("dial client " + String(address));
-  
+  Serial.println("dial client " + String(channel));
+
+  dial = new Dial(channel);
   Wire.begin();  // client mode
-  dial = new Dial(address);
+  memcheck();
 }
 
 void loop() {
-  long last_value = dial->value();
-  long last_down_value = dial->down_value();
   dial->update();
-
-  if (dial->value() != last_value) {
-    Serial.println("v: " + String(dial->value()));
-  }
-
-  if (dial->down_value() != last_down_value) {
-    Serial.println("dv: " + String(dial->down_value()));
-  }
-
-  if (dial->press()) {
-    Serial.println("press");
-  }
-
-  if (dial->release()) {
-    Serial.println("release");
+  if (dial->reading != prior) {
+    if (dial->press()) Serial.println("press");
+    if (dial->release()) Serial.println("release");
+    print_reading(prior = dial->reading);
   }
 }

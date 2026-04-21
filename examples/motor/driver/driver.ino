@@ -1,15 +1,14 @@
-#include "Arduino.h"
-
 #include "Wire.h"
 
+#include "channel.h"
 #include "circuits.h"
 #include "motor/driver.h"
 #include "log.h"
 
 Hardware hardware = {};
 Driver* driver{};
-
 Instruction instruction{};
+const int channel = number(Channel::car);
 
 void take_instruction(int message_size) {
   Wire.readBytes((byte*)&instruction, sizeof(Instruction));
@@ -24,21 +23,18 @@ void send_outcome() {
   }
 }
 
-const int channel = 0x09;
-
 void setup() {
   Serial.begin(9600);
   uno_car(hardware);
   driver = new Driver(hardware);
+  memcheck();
 
-  Serial.print("driver (channel ");
-  Serial.print(channel);
+  Serial.print("driver channel ");
+  Serial.println(channel);
 
   Wire.begin(channel);
   Wire.onReceive(take_instruction);
   Wire.onRequest(send_outcome);
-
-  memcheck();
 }
 
 void loop() {

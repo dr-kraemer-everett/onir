@@ -87,7 +87,7 @@ void log_id() {
   Serial.print(log_id_++);
 }
 
-void print_motion(const Motion& motion) {
+void print_motion(const Motion& motion, bool newline) {
   Serial.print(" mn: {mt: ");
   Serial.print((int)motion.motor);
   Serial.print(", pi: ");
@@ -95,12 +95,28 @@ void print_motion(const Motion& motion) {
   Serial.print(", wi: ");
   Serial.print(motion.winks);
   Serial.print("}");
+  if (newline) Serial.println();
 }
 
 void print_todo(const Instruction& todo) {
   if (not todo) return;
   print_instruction(todo);
 }
+
+void print_reading(const Reading& reading, bool newline) {
+  Serial.print("{v: ");
+  int v = reading.count;
+  left_pad(v);
+  Serial.print(v);
+  Serial.print("; d: ");
+  int d = reading.down_count;
+  left_pad(d);
+  Serial.print(d);
+  Serial.print("; b: ");
+  Serial.print((int)reading.button);
+  Serial.print(" }");
+  if (newline) Serial.println();
+  }
 
 void print_instruction(const Instruction& todo) {
   Serial.print(" { ch:");
@@ -111,25 +127,13 @@ void print_instruction(const Instruction& todo) {
   Serial.print((int)todo.respond);
   Serial.print(", cu: ");
   Serial.print((int)todo.cue);
-  print_motion(todo.motion);
+  print_motion(todo.motion, false);
   // Serial.print(", s: {m: ");
   // print_display(todo.message);
   // Serial.print(", p: ");
   // Serial.print(todo.message.point);
   Serial.print(", d: ");
-  {
-    Serial.print("{v: ");
-    int v = todo.reading.count;
-    left_pad(v);
-    Serial.print(v);
-    Serial.print("; d: ");
-    int d = todo.reading.down_count;
-    left_pad(d);
-    Serial.print(d);
-    Serial.print("; b: ");
-    Serial.print((int)todo.reading.button);
-    Serial.print(" }");
-  }
+  print_reading(todo.reading, false);
   Serial.print(", dir: ");
   Serial.print((int)todo.direction);
 
@@ -160,9 +164,9 @@ void log_io(Unit* unit) {
 }
 
 int memcheck() {
-  Serial.print("start loop (~");
+  Serial.print("~");
   int mem = gamut<Instruction>();
   Serial.print(mem);
-  Serial.println(" free):");
+  Serial.println(" free");
   return mem;
 }

@@ -1,7 +1,8 @@
 #pragma once
 
 #include "data.h"
-#include "dial/dial.h"
+
+class Dial;
 
 struct Link {
   Dial* dial { };
@@ -53,7 +54,7 @@ public:
   Control(int channel, Stem&);
   Control(int channel, const Hardware&);
 
-  Code update();
+  bool update();
 
 private:
   const int channel;

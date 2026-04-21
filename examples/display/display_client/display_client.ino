@@ -1,11 +1,9 @@
-#include "display.h"
 #include "Wire.h"
 
-Display display(DISPLAY_DEVICE_CHANNEL);
+#include "channel.h"
+#include "display/display.h"
 
-void banner() {
-  display.put_str("onir");
-}
+Display display(number(Channel::display));
 
 void flash() {
   display.set_point((millis() / 1000) % 2 ? -1 : 1);
@@ -13,7 +11,7 @@ void flash() {
 
 void setup() {
   Serial.begin(9600);
-  banner();
+  display.put_str("onir");
   Wire.begin();
   Serial.println("onir");
 }

@@ -5,7 +5,8 @@
 
 void log(const Instruction& s);
 
-void print_motion(const Motion& motion);
+void print_motion(const Motion& motion, bool newline = true);
+void print_reading(const Reading& reading, bool newline = true);
 
 void print_instruction(const Instruction& s);
 void print_todo(const Instruction& s);
