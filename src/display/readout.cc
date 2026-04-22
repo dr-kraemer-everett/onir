@@ -27,14 +27,11 @@ void Readout::refresh() {
   } else if (instruction->motion != prior) {
     prior = instruction->motion;
     print_instruction(*instruction);
-    Motion& motion = instruction->motion;
-
-    display->put(hex_digit((int)(motion.motor) % 16), 0);
-    if (motion.pitch < 0) display->put('-', 1);
-    display->put(hex_digit(absv(motion.pitch) / 16), 2);
-    display->put(hex_digit(absv(motion.pitch) % 16), 3);
+    display->put(hex_digit((int)(prior.motor) % 16), 0);
+    if (prior.pitch < 0) display->put('-', 1);
+    display->put(hex_digit(absv(prior.pitch) / 16), 2);
+    display->put(hex_digit(absv(prior.pitch) % 16), 3);
   }
-
   display->refresh();
 }
 
