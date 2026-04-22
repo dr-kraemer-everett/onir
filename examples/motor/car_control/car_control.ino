@@ -12,7 +12,7 @@ void setup() {
   Serial.begin(9600);
   uno_car(hardware);
   Wire.begin();  // client mode
-  control = new Control(number(Channel::car), hardware);
+  control = new Control(hardware);
   memcheck();
 }
 

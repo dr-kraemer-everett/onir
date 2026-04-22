@@ -67,6 +67,9 @@ struct Motion {  // TODO: remove default ctor; require a motor(function).
     winks = 0;
   }
 
+  bool operator==(const Motion& other) const {
+    return motor == other.motor and pitch == other.pitch;  // timeout (winks) may vary
+  }
 };
 
 enum class Cue : u_small {

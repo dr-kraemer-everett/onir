@@ -4,9 +4,10 @@
 #include "control.h"
 
 #include "dial/dial.h"
+#include "display/readout.h"
 #include "log.h"
 
-#define CONTROL_LOG true
+const static bool control_log = true;
 
 Link::Link(Dial* dial) : dial(dial) { }
 
@@ -58,41 +59,46 @@ void Control::init() {
         link->dial->set_dial_2();
       }
       Instruction& todo = link->instruction;
-      todo.channel = channel;
+      todo.channel = number(channel);
       todo.command = Code::modify;
       todo.cue = Cue::drive;
     }
   }
 }
 
-Control::Control(int channel, Stem& stem) :  channel(channel), panel(stem) {
+Control::Control(Stem& stem, Display* display) :
+  panel(stem), readout(new Readout(display)) {
   init();
 }
 
-Control::Control(int channel, const Hardware& hardware) :
-  panel(hardware), channel(channel) {
+Control::Control(const Hardware& hardware, Display* display) :
+  panel(hardware), readout(new Readout(display)) {
   init();
 }
 
-static void Control::clear_device(int channel) {
+void Control::address(Channel channel) {
+  channel = channel;
+}
+
+static void Control::clear_device(Channel channel) {
   const static Instruction blank { };
-  Wire.beginTransmission(channel);
+  Wire.beginTransmission(number(channel));
   Wire.write((char*)&blank, sizeof(Instruction));
-  Wire.endTransmission(channel);
+  Wire.endTransmission(number(channel));
 }
 
 // num bytes if response; false for missing data or bad response.
-static int Control::read_instruction(int channel, Instruction* buffer) {
+static int Control::read_instruction(Channel channel, Instruction* buffer) {
   if (not buffer) return 0;
 
-  Wire.requestFrom(channel, sizeof(Instruction));
+  Wire.requestFrom(number(channel), sizeof(Instruction));
   if (Wire.available() == sizeof(Loop)) {
     Wire.readBytes((char*)buffer, sizeof(Loop));  // prefix read
     return sizeof(Loop);
 
   } else if (Wire.available() == sizeof(Instruction)) {
     Wire.readBytes((char*)buffer, sizeof(Instruction));
-    if (CONTROL_LOG) {
+    if (control_log) {
       print_instruction(*buffer);
     }
     return sizeof(Instruction);
@@ -157,10 +163,11 @@ bool Control::update_link(Link* link) {
       todo.command = Code::perform;
     }
     todo.respond = Code::none;
-    Wire.beginTransmission(channel);
+    Wire.beginTransmission(number(channel));
     Wire.write((char*)&todo, sizeof(Instruction));
-    Wire.endTransmission(channel);
+    Wire.endTransmission(number(channel));
     update_panel(todo, panel);
+    readout->report(&todo);
     return true;
   }
   return false;
@@ -172,4 +179,5 @@ bool Control::update() {
     updated = update_link(panel[fn]) or updated;
   }
   return updated;
+  readout->refresh();
 }

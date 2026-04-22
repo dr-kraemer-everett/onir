@@ -1,9 +1,8 @@
-#include "driver.h"
-#include "log.h"
-
 #include "Arduino.h"
 
-bool logging = true;
+#include "driver.h"
+
+#include "log.h"
 
 Driver::Driver(Machine& machine) : machine(machine) {
   init();
@@ -51,6 +50,7 @@ static Code Driver::drive(Machine& machine, Program& program) {
   Joint* joint = machine[function];
   if (not joint) {
     Serial.println("reject 2 ");
+    print_instruction(todo);
     return missing(todo);                         // don't have one of those
   }
 

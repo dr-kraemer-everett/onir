@@ -47,3 +47,12 @@ void uno_car(Hardware hardware) {
   assign(local, Fn::ground, 7);
   power(local);
 }
+
+void uno_driver_test(Hardware hardware) {
+  uno_io(hardware);
+
+  // just some pins we don't need for the test demo.
+  assign(hardware, Fn::motor_r_wheel, 14);
+  assign(hardware, Fn::motor_l_wheel, 15);
+
+}

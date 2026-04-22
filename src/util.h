@@ -12,7 +12,7 @@ static inline int mod(int modulus, int value) {
 }
 
 inline char hex_digit(int value) {
-  if ((value < 0) or (value > 16)) return '-';
+  if ((value < 0) or (value >= 16)) return '-';
   if (value < 10) return '0' + value;
   return 'A' + value - 10;
 }

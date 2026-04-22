@@ -9,6 +9,6 @@ enum class Channel : int {
   screen_3  = 0x0D,
 };
 
-int number(Channel channel) {
+inline int number(Channel channel) {
   return (int)channel;
 }

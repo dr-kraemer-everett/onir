@@ -3,10 +3,13 @@
 #include "channel.h"
 #include "circuits.h"
 #include "motor/driver.h"
+#include "display/readout.h"
 #include "log.h"
 
-Hardware hardware = {};
 Driver* driver{};
+Readout* readout{};
+
+Hardware hardware = {};
 Instruction instruction{};
 const int channel = number(Channel::car);
 
@@ -25,8 +28,9 @@ void send_outcome() {
 
 void setup() {
   Serial.begin(9600);
-  uno_car(hardware);
+  uno_driver_test(hardware);
   driver = new Driver(hardware);
+  readout = new Readout(&instruction, hardware);
   memcheck();
 
   Serial.print("driver channel ");
@@ -44,4 +48,5 @@ void loop() {
   } else {
     driver->drive();
   }
+  readout->refresh();
 }

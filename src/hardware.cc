@@ -31,15 +31,17 @@ int dispatch(const Hardware& hardware, Function fn) {
   return hardware[(int)fn];
 }
 
+int dispatch(const Hardware& hardware, Function fn, int mode) {
+  const int pin = hardware[(int)fn];
+  pinMode(pin, mode);
+  return pin;
+}
+
 void power(const Hardware& hardware) {
   if (is_set(hardware, Function::ground)) {
-    const int ground_pin = dispatch(hardware, Function::ground);
-    pinMode(ground_pin, OUTPUT);
-    digitalWrite(ground_pin, LOW);
+    digitalWrite(dispatch(hardware, Function::ground, OUTPUT), LOW);
   }
   if (is_set(hardware, Function::vcc)) {
-    const int vcc_pin = dispatch(hardware, Function::vcc);
-    pinMode(vcc_pin, OUTPUT);
-    digitalWrite(vcc_pin, HIGH);
+    digitalWrite(dispatch(hardware, Function::vcc, OUTPUT), HIGH);
   }
 }
