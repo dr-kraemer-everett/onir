@@ -71,12 +71,18 @@ static Code Driver::drive(Machine& machine, Program& program) {
         return reject(todo);                    // can't drive nothing
       }
 
-      if (not joint->trimmer) zero(joint, program);           // set up trimmer
-
-      if (performative(joint->drive(todo)) and command == Code::perform) {
-        return sign(todo, machine.assign(todo.motion));       // activate joint
+      if (not joint->trimmer) {
+        zero(joint, program);           // set up trimmer
+        Serial.println("Driver::drive 1");
       }
 
+      if (performative(joint->drive(todo)) and command == Code::perform) {
+        Serial.println("Driver::drive 2");
+        return sign(todo, machine.assign(todo.motion));       // activate joint
+
+      }
+      Serial.println("Driver::drive 3");
+      print_instruction(todo);
       return sign_modified(todo);                             // updated drive motion
     }
 

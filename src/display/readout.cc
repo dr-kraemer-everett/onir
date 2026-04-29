@@ -14,6 +14,7 @@ Readout::Readout(Instruction* instruction, const Hardware& hardware) :
 // remove
 // remove
 #include "log.h"
+#include "Arduino.h"
 // remove
 // remove
 // remove
@@ -26,7 +27,8 @@ void Readout::refresh() {
     display->put_str("null");
   } else if (instruction->motion != prior) {
     prior = instruction->motion;
-    print_instruction(*instruction);
+    // Serial.println("Readout::refresh ");
+    // print_instruction(*instruction);
     display->put(hex_digit((int)(prior.motor) % 16), 0);
     if (prior.pitch < 0) display->put('-', 1);
     display->put(hex_digit(absv(prior.pitch) / 16), 2);

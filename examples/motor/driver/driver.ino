@@ -28,7 +28,9 @@ void send_outcome() {
 
 void setup() {
   Serial.begin(9600);
-  uno_driver_test(hardware);
+ // uno_driver_test(hardware);
+   uno_car(hardware);
+
   driver = new Driver(hardware);
   readout = new Readout(&instruction, hardware);
   memcheck();

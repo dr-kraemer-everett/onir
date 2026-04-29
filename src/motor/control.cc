@@ -108,17 +108,27 @@ bool Control::debrief_driver() {
 
 bool Control::update_link(Link* link) {
   if (not link) return false;
+  // Serial.print("update_link 1");
+  // print_instruction(link->instruction);
   link->dial->update();
   Instruction& todo = link->instruction;
+  // Serial.print("update_link 2");
+  // print_instruction(todo);
   if (todo.reading != link->dial->reading) {
+    Serial.print("Control::update_link");
+    print_instruction(todo);
     if (not debrief_driver()) {
       Serial.println("driver error?");
     }
     todo.reading = link->dial->reading;
     if (todo.command == Code::none) {
       todo.command = Code::perform;
+      // Serial.print("update_link 3");
+      // print_instruction(todo);
     }
     todo.respond = Code::none;
+    Serial.print("update_link 4");
+    print_instruction(todo);
     Wire.beginTransmission(number(channel));
     Wire.write((char*)&todo, sizeof(Instruction));
     Wire.endTransmission(number(channel));
